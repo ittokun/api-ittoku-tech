@@ -8,10 +8,9 @@
 
 ### 環境構築
 
-1. docker-compose build
-2. docker-compose run web rails db:create
-3. docker-compose up
-4. open http://localhost:3000
+1. docker-compose up --build
+2. docker-compose run web rails db:setup
+3. open http://localhost:3000
 
 ### アプリ詳細
 
@@ -22,9 +21,9 @@
 * Configuration
   * ?
 * Database creation
-  * docker-compose run web rails db:create
+  * make db_setup
 * Database initialization
-  * docker-compose run web rails db:reset
+  * make db_reset
 * How to run the test suite
   * docker-compose run web rails test
 * Services (job queues, cache servers, search engines, etc.)
