@@ -8,9 +8,9 @@
 
 ### 環境構築
 
-1. docker-compose up --build
-2. docker-compose run web rails db:setup
-3. open http://localhost:3000
+1. `make setup`
+2. `make run`
+3. open http://localhost:8000
 
 ### アプリ詳細
 

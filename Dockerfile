@@ -1,17 +1,16 @@
 FROM ruby:3.1.2
 
 RUN apt-get update -qq && apt-get install -y postgresql-client
-RUN mkdir /app
-WORKDIR /app
-ADD Gemfile /app/Gemfile
-ADD Gemfile.lock /app/Gemfile.lock
+
+WORKDIR /api
+ADD Gemfile /api/Gemfile
+ADD Gemfile.lock /api/Gemfile.lock
 RUN bundle install
-ADD . /app
+ADD . /api
 
 COPY entrypoint.sh /usr/bin
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
-EXPOSE 3000
+EXPOSE 8000
 
-CMD ["rails", "server", "-b", "0.0.0.0"]
-
+CMD ["rails", "server", "-b", "0.0.0.0", "-p", "8000"]
