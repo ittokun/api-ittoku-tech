@@ -18,8 +18,8 @@ class PostTest < ActiveSupport::TestCase
     assert_not @post.valid?
   end
 
-  test 'body should be presence' do
-    @post.body = nil
+  test 'content should be presence' do
+    @post.content = nil
     assert_not @post.valid?
   end
 
@@ -28,8 +28,8 @@ class PostTest < ActiveSupport::TestCase
     assert_not @post.valid?
   end
 
-  test 'body max length should be 100000' do
-    @post.body = 'x' * 100001
+  test 'content max length should be 100000' do
+    @post.content = 'x' * 100001
     assert_not @post.valid?
   end
 end

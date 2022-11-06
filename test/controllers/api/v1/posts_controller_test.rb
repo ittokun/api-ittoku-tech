@@ -18,13 +18,13 @@ class Api::V1::PostsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should get create' do
     post = posts(:one)
-    post api_v1_posts_url, params: { post: { title: post.title, body: post.body } }
+    post api_v1_posts_url, params: { post: { title: post.title, content: post.content } }
     assert_response :success
   end
 
   test 'should get update' do
     post = posts(:one)
-    patch api_v1_post_url(post), params: { post: { title: post.title, body: post.body } }
+    patch api_v1_post_url(post), params: { post: { title: post.title, content: post.content } }
     assert_response :success
   end
 
