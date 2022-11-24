@@ -1,5 +1,6 @@
 puts 'db seed:'
 Post.create!(title: 'First post', content: 'Hello World!!!');
+Post.create!(title: 'x' * 999, content: 'x' * 99999);
 
 10.times do |i|
   title = 'Post: ' + i.to_s;
