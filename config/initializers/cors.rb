@@ -19,4 +19,9 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       methods: %i[get post put patch delete options head]
     )
   end
+
+  allow do
+    origins '*'
+    resource '/public/*', headers: :any, methods: :get
+  end
 end
