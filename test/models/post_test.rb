@@ -29,7 +29,24 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test 'content max length should be 100000' do
-    @post.content = 'x' * 100001
+    @post.content = 'x' * 100_001
     assert_not @post.valid?
+  end
+
+  test '.search!(keyword) count is 1' do
+    assert_equal 1, Post.search!(@post.title).count
+  end
+
+  test '.search!(keyword) should be ignore case' do
+    assert_equal 1, Post.search!(@post.title.upcase).count
+  end
+
+  test '.search!(keyword) should be raise ActiveRecord::RecordNotFound' do
+    assert_raises ActiveRecord::RecordNotFound do
+      Post.search!(nil)
+    end
+    assert_raises ActiveRecord::RecordNotFound do
+      Post.search!('')
+    end
   end
 end
