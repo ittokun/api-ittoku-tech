@@ -45,7 +45,7 @@ class Api::V1::PostsControllerTest < ActionDispatch::IntegrationTest
 
   test 'destroy: should return 200' do
     post = posts(:one)
-    delete api_v1_post_url(post) 
+    delete api_v1_post_url(post)
     assert_response :success
   end
 
@@ -59,4 +59,17 @@ class Api::V1::PostsControllerTest < ActionDispatch::IntegrationTest
   #   delete api_v1_post_url(post)
   #   assert_response :not_found
   # end
+
+  test 'search: should return 200' do
+    posts(:one)
+    get search_api_v1_posts_url, params: { q: 'post' }
+    assert_response :success
+  end
+
+  test 'search: should return 404' do
+    get search_api_v1_posts_url
+    assert_response :not_found
+    get search_api_v1_posts_url, params: { q: '' }
+    assert_response :not_found
+  end
 end
