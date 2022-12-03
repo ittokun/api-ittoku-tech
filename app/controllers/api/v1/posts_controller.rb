@@ -40,11 +40,6 @@ class Api::V1::PostsController < ApplicationController
     end
   end
 
-  # GET /api/v1/posts/search?q=asdf
-  def search
-    render(json: @posts, status: 200)
-  end
-
   private
 
   def post_params
@@ -58,7 +53,6 @@ class Api::V1::PostsController < ApplicationController
     when 'create'  then @post  = Post.new(post_params)
     when 'update'  then @post  = Post.find(params[:id])
     when 'destroy' then @post  = Post.find(params[:id])
-    when 'search'  then @posts = Post.search!(params[:q])
     end
   end
 

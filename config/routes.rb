@@ -1,11 +1,8 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      resources :posts do
-        collection do
-          get 'search'
-        end
-      end
+      get '/search/posts', to: 'searches#posts'
+      resources :posts
       devise_for :users
     end
   end
