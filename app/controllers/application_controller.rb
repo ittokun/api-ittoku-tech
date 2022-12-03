@@ -10,9 +10,9 @@ class ApplicationController < ActionController::API
 
   def set_url_list
     @url_list = {
-      post_list_url: "#{ENV['DOMAIN']}/api/v1/posts",
-      post_detail_url: "#{ENV['DOMAIN']}/api/v1/posts/{id}",
-      search_posts_url: "#{ENV['DOMAIN']}/api/v1/search/posts?q={query}"
+      post_list_url: "https://#{ENV['DOMAIN']}/api/v1/posts",
+      post_detail_url: "https://#{ENV['DOMAIN']}/api/v1/posts/{id}",
+      search_posts_url: "https://#{ENV['DOMAIN']}/api/v1/search/posts?q={query}"
     }
   end
 end
