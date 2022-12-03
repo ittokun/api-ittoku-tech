@@ -42,6 +42,9 @@ gem 'devise'
 # Searcher [https://github.com/activerecord-hackery/ransack]
 gem 'ransack'
 
+# format render json (https://github.com/ledsun/rails_pretty_json_rednerer)
+gem 'rails_pretty_json_rednerer'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]

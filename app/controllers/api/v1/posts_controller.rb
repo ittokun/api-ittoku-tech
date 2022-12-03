@@ -5,38 +5,38 @@ class Api::V1::PostsController < ApplicationController
 
   # GET /api/v1/posts
   def index
-    render(json: @posts, status: 200)
+    render(pretty_json: @posts, status: 200)
   end
 
   # GET /api/v1/posts/:id
   def show
-    render(json: @post, status: 200)
+    render(pretty_json: @post, status: 200)
   end
 
   # POST /api/v1/posts
   def create
     if @post.save
-      render(json: @post, status: 200)
+      render(pretty_json: @post, status: 200)
     else
-      render(json: @post.errors, status: 422)
+      render(pretty_json: @post.errors, status: 422)
     end
   end
 
   # PATCH /api/v1/posts/:id
   def update
     if @post.update(post_params)
-      render(json: @post, status: 200)
+      render(pretty_json: @post, status: 200)
     else
-      render(json: @post.errors, status: 422)
+      render(pretty_json: @post.errors, status: 422)
     end
   end
 
   # DELETE /api/v1/posts/:id
   def destroy
     if @post.destroy
-      render(json: @post, status: 200)
+      render(pretty_json: @post, status: 200)
     else
-      render(json: @post.errors, status: 422)
+      render(pretty_json: @post.errors, status: 422)
     end
   end
 
