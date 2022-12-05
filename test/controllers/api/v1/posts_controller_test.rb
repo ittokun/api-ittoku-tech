@@ -6,6 +6,11 @@ class Api::V1::PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'index: should return 404' do
+    get api_v1_posts_url, params: { page: 100 }
+    assert_response :not_found
+  end
+
   test 'show: should return 200' do
     get api_v1_post_url(posts(:one))
     assert_response :success

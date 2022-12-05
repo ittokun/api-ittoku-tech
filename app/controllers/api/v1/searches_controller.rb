@@ -1,20 +1,18 @@
 class Api::V1::SearchesController < ApplicationController
   before_action :set_search
 
-  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
-
   # GET /api/v1/search/posts?q=asdf
   def posts
-    render(json: @search, status: 200)
+    if @search.any?
+      render(pretty_json: @search, status: 200)
+    else
+      render(pretty_json: { message: 'Post Not Found' }, status: 404)
+    end
   end
 
   private
 
   def set_search
-    @search = Post.search!(params[:q])
-  end
-
-  def record_not_found
-    render nothing: true, status: 404
+    @search = Post.search(params[:q]).page(params[:page])
   end
 end

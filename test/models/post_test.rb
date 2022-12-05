@@ -33,20 +33,11 @@ class PostTest < ActiveSupport::TestCase
     assert_not @post.valid?
   end
 
-  test '.search!(keyword) count is 1' do
-    assert_equal 1, Post.search!(@post.title).count
+  test '.search(keyword) count is 1' do
+    assert_equal 1, Post.search(@post.title).count
   end
 
-  test '.search!(keyword) should be ignore case' do
-    assert_equal 1, Post.search!(@post.title.upcase).count
-  end
-
-  test '.search!(keyword) should be raise ActiveRecord::RecordNotFound' do
-    assert_raises ActiveRecord::RecordNotFound do
-      Post.search!(nil)
-    end
-    assert_raises ActiveRecord::RecordNotFound do
-      Post.search!('')
-    end
+  test '.search(keyword) should be ignore case' do
+    assert_equal 1, Post.search(@post.title.upcase).count
   end
 end

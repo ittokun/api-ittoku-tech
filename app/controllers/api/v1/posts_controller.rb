@@ -5,7 +5,11 @@ class Api::V1::PostsController < ApplicationController
 
   # GET /api/v1/posts
   def index
-    render(pretty_json: @posts, status: 200)
+    if @posts.any?
+      render(pretty_json: @posts, status: 200)
+    else
+      render(pretty_json: { message: 'Post Not Found' }, status: 404)
+    end
   end
 
   # GET /api/v1/posts/:id
@@ -48,7 +52,7 @@ class Api::V1::PostsController < ApplicationController
 
   def set_user
     case action_name
-    when 'index'   then @posts = Post.all
+    when 'index'   then @posts = Post.page(params[:page])
     when 'show'    then @post  = Post.find(params[:id])
     when 'create'  then @post  = Post.new(post_params)
     when 'update'  then @post  = Post.find(params[:id])

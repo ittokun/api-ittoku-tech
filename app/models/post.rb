@@ -6,16 +6,13 @@ class Post < ApplicationRecord
   #
   # Example:
   # Post.search!('post') => [{title: 'post 1', content: '...'}, ...]
-  # Post.search!('not found') => raise ActiveRecord::RecordNotFound
-  # Post.search!('') => raise ActiveRecord::RecordNotFound
-  def self.search!(keyword)
+  # Post.search!('not found') => []
+  # Post.search!('') => []
+  def self.search(keyword)
     keyword = SecureRandom.hex if keyword.blank?
     keywords = keyword.split(' ').map! { |kw| "%#{kw}%" }
     query = ransack(title_or_content_matches_any: keywords)
-    posts = query.result
 
-    raise ActiveRecord::RecordNotFound if posts.empty?
-
-    posts
+    query.result
   end
 end
