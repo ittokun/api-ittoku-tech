@@ -4,13 +4,14 @@
 
 ### サイト紹介
 
-これから書いていきます。
+* 記事投稿（作成、編集、削除）
+* 検索機能（記事）
 
 ### 環境構築
 
-1. `make setup`
-2. `make run`
-3. open http://localhost:8000
+下記のURLにアクセスし、そちらの手順にしたがって環境構築を行います。
+
+https://github.com/ittoku-ky73/ittoku-tech
 
 ### アプリ詳細
 
@@ -21,12 +22,12 @@
 * Configuration
   * ?
 * Database creation
-  * make db_setup
+  * rails db:setup
 * Database initialization
-  * make db_reset
+  * rails db:setup
 * How to run the test suite
-  * docker-compose run web rails test
+  * rails test
 * Services (job queues, cache servers, search engines, etc.)
   * not yet
 * Deployment instructions
-  * not yet
+  * flyctl deploy
