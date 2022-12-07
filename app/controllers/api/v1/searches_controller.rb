@@ -3,7 +3,7 @@ class Api::V1::SearchesController < ApplicationController
 
   # GET /api/v1/search/posts?q=asdf
   def posts
-    if @search.any?
+    if @search['items'].any?
       render(pretty_json: @search, status: 200)
     else
       render(pretty_json: { message: 'Post Not Found' }, status: 404)
@@ -13,6 +13,10 @@ class Api::V1::SearchesController < ApplicationController
   private
 
   def set_search
-    @search = Post.search(params[:q]).page(params[:page])
+    result = Post.search(params[:q])
+    @search = {}
+
+    @search['total_count'] = result.length
+    @search['items'] = result.page(params[:page]) || []
   end
 end
