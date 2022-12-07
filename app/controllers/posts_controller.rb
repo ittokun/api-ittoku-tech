@@ -1,23 +1,23 @@
-class Api::V1::PostsController < ApplicationController
+class PostsController < ApplicationController
   before_action :set_user
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
-  # GET /api/v1/posts
+  # GET /posts
   def index
-    if @posts.any?
+    if @posts['posts'].any?
       render(pretty_json: @posts, status: 200)
     else
       render(pretty_json: { message: 'Post Not Found' }, status: 404)
     end
   end
 
-  # GET /api/v1/posts/:id
+  # GET /posts/:id
   def show
     render(pretty_json: @post, status: 200)
   end
 
-  # POST /api/v1/posts
+  # POST /posts
   def create
     if @post.save
       render(pretty_json: @post, status: 200)
@@ -26,7 +26,7 @@ class Api::V1::PostsController < ApplicationController
     end
   end
 
-  # PATCH /api/v1/posts/:id
+  # PATCH /posts/:id
   def update
     if @post.update(post_params)
       render(pretty_json: @post, status: 200)
@@ -35,7 +35,7 @@ class Api::V1::PostsController < ApplicationController
     end
   end
 
-  # DELETE /api/v1/posts/:id
+  # DELETE /posts/:id
   def destroy
     if @post.destroy
       render(pretty_json: @post, status: 200)
@@ -52,7 +52,10 @@ class Api::V1::PostsController < ApplicationController
 
   def set_user
     case action_name
-    when 'index'   then @posts = Post.page(params[:page])
+    when 'index'
+      @posts = {}
+      @posts['post_count'] = Post.count
+      @posts['posts'] = Post.page(params[:page])
     when 'show'    then @post  = Post.find(params[:id])
     when 'create'  then @post  = Post.new(post_params)
     when 'update'  then @post  = Post.find(params[:id])
