@@ -33,6 +33,17 @@ class PostTest < ActiveSupport::TestCase
     assert_not @post.valid?
   end
 
+  test 'comments includes @comment' do
+    @comment = comments(:one)
+    assert_includes @post.comments, @comment
+  end
+
+  test 'comments should be dependent destroyed' do
+    assert_difference('Comment.count', -1) do
+      @post.destroy
+    end
+  end
+
   test '.search(keyword) count is 1' do
     assert_equal 1, Post.search(@post.title).count
   end
