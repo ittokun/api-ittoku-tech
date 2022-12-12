@@ -1,8 +1,6 @@
 class PostsController < ApplicationController
   before_action :set_user
 
-  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
-
   # GET /posts
   def index
     if @posts['posts'].any?
@@ -61,9 +59,5 @@ class PostsController < ApplicationController
     when 'update'  then @post  = Post.find(params[:id])
     when 'destroy' then @post  = Post.find(params[:id])
     end
-  end
-
-  def record_not_found
-    render nothing: true, status: 404
   end
 end

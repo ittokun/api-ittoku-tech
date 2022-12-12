@@ -1,46 +1,46 @@
 require 'test_helper'
 
 class PostsControllerTest < ActionDispatch::IntegrationTest
-  # expected response
-  # {
-  #   "post_count": "1",
-  #   "posts": [
-  #     {
-  #       "id": "1234567890",
-  #       "title": "test",
-  #       "content": "# hello",
-  #       "created_at": DATETIME,
-  #       "updated_at": DATETIME
-  #     }
-  #   ]
-  # }
   test 'index: should return 200' do
     get posts_url
-    assert_response :success
-    post = posts(:one)
     res = JSON.parse(response.body)
+
+    assert_response :success
     assert_equal 1, res['post_count']
-    assert_equal post.id, res['posts'][0]['id']
+    assert_equal posts(:one).id, res['posts'][0]['id']
   end
 
   test 'index: should return 404' do
     get posts_url, params: { page: 100 }
+    res = JSON.parse(response.body)
+
     assert_response :not_found
+    assert_equal 'Post Not Found', res['message']
   end
 
   test 'show: should return 200' do
-    get post_url(posts(:one))
+    post = posts(:one)
+    get post_url(post)
+    res = JSON.parse(response.body)
+
     assert_response :success
+    assert_equal post.id, res['id']
   end
 
   test 'show: should return 404' do
     get post_url('hogebar')
+    res = JSON.parse(response.body)
+
     assert_response :not_found
+    assert_equal 'Post Not Found', res['message']
   end
 
   test 'create: should return 200' do
     post posts_url, params: { post: { title: 'test', content: 'hello' } }
+    res = JSON.parse(response.body)
+
     assert_response :success
+    assert_equal 'hello', res['content']
   end
 
   test 'create: should return 422' do
@@ -51,34 +51,42 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   test 'update: should return 200' do
     post = posts(:one)
     patch post_url(post), params: { post: { title: post.title, content: post.content } }
+    res = JSON.parse(response.body)
+
     assert_response :success
+    assert_equal post.id, res['id']
   end
 
   test 'update: should return 404' do
     patch post_url('hogebar'), params: { post: { title: 'post', content: 'not found' } }
+    res = JSON.parse(response.body)
+
     assert_response :not_found
+    assert_equal 'Post Not Found', res['message']
   end
 
   test 'update: should return 422' do
     post = posts(:one)
     patch post_url(post), params: { post: { title: '', content: '' } }
+    res = JSON.parse(response.body)
+
     assert_response :unprocessable_entity
   end
 
   test 'destroy: should return 200' do
     post = posts(:one)
     delete post_url(post)
+    res = JSON.parse(response.body)
+
     assert_response :success
+    assert_equal post.id, res['id']
   end
 
   test 'destroy: should return 404' do
     delete post_url('hogebar')
-    assert_response :not_found
-  end
+    res = JSON.parse(response.body)
 
-  # test 'destroy: should return 422' do
-  #   post = posts(:one)
-  #   delete post_url(post)
-  #   assert_response :not_found
-  # end
+    assert_response :not_found
+    assert_equal 'Post Not Found', res['message']
+  end
 end
