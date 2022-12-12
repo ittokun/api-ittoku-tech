@@ -1,14 +1,38 @@
 require "test_helper"
 
 class CommentsControllerTest < ActionDispatch::IntegrationTest
-  test 'create: should return 200' do
-    post post_comments_url(comments(:one).post), params: { comment: { content: 'hello' } }
+  test 'index should return 200' do
+    comment = comments(:one)
+    get post_comments_url(comment.post)
+    res = JSON.parse(response.body)
+
     assert_response :success
+    assert_equal comment.content, res[0]['content']
+  end
+
+  test 'index should return 404' do
+    get post_comments_url(1234)
+    res = JSON.parse(response.body)
+
+    assert_response :not_found
+    assert_equal 'Post Not Found', res['message']
+  end
+
+  test 'create: should return 200' do
+    comment = comments(:one)
+    post post_comments_url(comment.post), params: { comment: { content: 'hello' } }
+    res = JSON.parse(response.body)
+
+    assert_response :success
+    assert_equal 'hello', res['content']
   end
 
   test 'create: should return 404' do
     post post_comments_url(1234), params: { comment: { content: 'hello'} }
+    res = JSON.parse(response.body)
+
     assert_response :not_found
+    assert_equal 'Post Not Found', res['message']
   end
 
   test 'create: should return 422' do
@@ -19,11 +43,24 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test 'destroy: should return 200' do
     comment = comments(:one)
     delete post_comment_url(comment.post, comment)
+    res = JSON.parse(response.body)
+
     assert_response :success
+    assert_equal comment.content, res['content']
   end
 
   test 'destroy: should return 404' do
-    delete post_comment_url(1234, 5678)
+    comment = comments(:one)
+    delete post_comment_url(1234, comment)
+    res = JSON.parse(response.body)
+
     assert_response :not_found
+    assert_equal 'Post Not Found', res['message']
+
+    delete post_comment_url(comment.post, 1234)
+    res = JSON.parse(response.body)
+
+    assert_response :not_found
+    assert_equal 'Comment Not Found', res['message']
   end
 end

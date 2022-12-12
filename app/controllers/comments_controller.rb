@@ -1,7 +1,9 @@
 class CommentsController < ApplicationController
   before_action :set_comment_post
 
-  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  def index
+    render(pretty_json: @comments, status: 200)
+  end
 
   def create
     if @comment.save
@@ -27,6 +29,9 @@ class CommentsController < ApplicationController
 
   def set_comment_post
     case action_name
+    when 'index'
+      @post = Post.eager_load(:comments).find(params[:post_id])
+      @comments = @post.comments
     when 'create'
       @post = Post.find(params[:post_id])
       @comment = @post.comments.new(comment_params)
@@ -34,9 +39,5 @@ class CommentsController < ApplicationController
       @post = Post.find(params[:post_id])
       @comment = @post.comments.find(params[:id])
     end
-  end
-
-  def record_not_found
-    render nothing: true, status: 404
   end
 end
