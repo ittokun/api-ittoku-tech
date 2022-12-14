@@ -45,10 +45,15 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test '.search(keyword) count is 1' do
-    assert_equal 1, Post.search(@post.title).count
+    assert_equal @post, Post.search(@post.title).first
   end
 
   test '.search(keyword) should be ignore case' do
-    assert_equal 1, Post.search(@post.title.upcase).count
+    assert_equal @post, Post.search(@post.title.upcase).first
+  end
+
+  test '.search(keyword) should be return []' do
+    assert Post.search('').empty?
+    assert Post.search('search not found').empty?
   end
 end

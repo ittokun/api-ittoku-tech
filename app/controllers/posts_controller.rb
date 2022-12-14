@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :set_user
+  before_action :set_post
 
   # GET /posts
   def index
@@ -48,7 +48,7 @@ class PostsController < ApplicationController
     params.require(:post).permit(:title, :content)
   end
 
-  def set_user
+  def set_post
     case action_name
     when 'index'
       @posts = {}

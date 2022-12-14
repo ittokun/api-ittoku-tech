@@ -17,6 +17,6 @@ class SearchesController < ApplicationController
     @search = {}
 
     @search['search_count'] = result.length
-    @search['items'] = result.page(params[:page]) || []
+    @search['items'] = result.page(params[:page])
   end
 end

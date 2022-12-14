@@ -18,7 +18,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Post Not Found', res['message']
   end
 
-  test 'create: should return 200' do
+  test 'create should return 200' do
     comment = comments(:one)
     post post_comments_url(comment.post), params: { comment: { content: 'hello' } }
     res = JSON.parse(response.body)
@@ -27,20 +27,20 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'hello', res['content']
   end
 
-  test 'create: should return 404' do
-    post post_comments_url(1234), params: { comment: { content: 'hello'} }
+  test 'create should return 404' do
+    post post_comments_url(1234), params: { comment: { content: 'hello' } }
     res = JSON.parse(response.body)
 
     assert_response :not_found
     assert_equal 'Post Not Found', res['message']
   end
 
-  test 'create: should return 422' do
+  test 'create should return 422' do
     post post_comments_url(comments(:one).post), params: { comment: { content: '' } }
     assert_response :unprocessable_entity
   end
 
-  test 'destroy: should return 200' do
+  test 'destroy should return 200' do
     comment = comments(:one)
     delete post_comment_url(comment.post, comment)
     res = JSON.parse(response.body)
@@ -49,7 +49,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal comment.content, res['content']
   end
 
-  test 'destroy: should return 404' do
+  test 'destroy should return 404' do
     comment = comments(:one)
     delete post_comment_url(1234, comment)
     res = JSON.parse(response.body)

@@ -1,5 +1,5 @@
 class CommentsController < ApplicationController
-  before_action :set_comment_post
+  before_action :set_post_comments
 
   def index
     render(pretty_json: @comments, status: 200)
@@ -27,7 +27,7 @@ class CommentsController < ApplicationController
     params.require(:comment).permit(:content)
   end
 
-  def set_comment_post
+  def set_post_comments
     case action_name
     when 'index'
       @post = Post.eager_load(:comments).find(params[:post_id])
