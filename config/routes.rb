@@ -8,4 +8,6 @@ Rails.application.routes.draw do
   end
 
   devise_for :users
+
+  match '*unmatched', to: 'application#url_not_found', via: :all
 end
