@@ -15,7 +15,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     res = JSON.parse(response.body)
 
     assert_response :not_found
-    assert_equal 'Post Not Found', res['message']
+    assert_equal 'URL Not Found', res['message']
   end
 
   test 'create should return 200' do
@@ -32,7 +32,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     res = JSON.parse(response.body)
 
     assert_response :not_found
-    assert_equal 'Post Not Found', res['message']
+    assert_equal 'URL Not Found', res['message']
   end
 
   test 'create should return 422' do
@@ -55,12 +55,12 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     res = JSON.parse(response.body)
 
     assert_response :not_found
-    assert_equal 'Post Not Found', res['message']
+    assert_equal 'URL Not Found', res['message']
 
     delete post_comment_url(comment.post, 1234)
     res = JSON.parse(response.body)
 
     assert_response :not_found
-    assert_equal 'Comment Not Found', res['message']
+    assert_equal 'URL Not Found', res['message']
   end
 end

@@ -15,7 +15,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     res = JSON.parse(response.body)
 
     assert_response :not_found
-    assert_equal 'Post Not Found', res['message']
+    assert_equal 'URL Not Found', res['message']
   end
 
   test 'show should return 200' do
@@ -32,7 +32,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     res = JSON.parse(response.body)
 
     assert_response :not_found
-    assert_equal 'Post Not Found', res['message']
+    assert_equal 'URL Not Found', res['message']
   end
 
   test 'create should return 200' do
@@ -62,7 +62,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     res = JSON.parse(response.body)
 
     assert_response :not_found
-    assert_equal 'Post Not Found', res['message']
+    assert_equal 'URL Not Found', res['message']
   end
 
   test 'update should return 422' do
@@ -86,6 +86,6 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     res = JSON.parse(response.body)
 
     assert_response :not_found
-    assert_equal 'Post Not Found', res['message']
+    assert_equal 'URL Not Found', res['message']
   end
 end

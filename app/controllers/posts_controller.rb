@@ -6,7 +6,7 @@ class PostsController < ApplicationController
     if @posts['posts'].any?
       render(pretty_json: @posts, status: 200)
     else
-      render(pretty_json: { message: 'Post Not Found' }, status: 404)
+      url_not_found
     end
   end
 
