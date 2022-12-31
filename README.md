@@ -11,7 +11,7 @@
 
 下記のURLにアクセスし、そちらの手順にしたがって環境構築を行います。
 
-https://github.com/ittoku-ky73/ittoku-tech
+https://github.com/ittokun/ittoku-tech
 
 ### アプリ詳細
 
