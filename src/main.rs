@@ -1,28 +1,26 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+#[macro_use]
+extern crate log;
 
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
+use std::{env, io};
 
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
+use actix_web::{web, App, HttpServer};
 
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
-}
+mod api;
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+async fn main() -> io::Result<()> {
+    env::set_var("RUST_LOG", "ittoku_api=debug,actix_web=info");
+    env_logger::init();
+
+    let app = || {
+        debug!("Constructing the App");
+
         App::new()
-            .service(hello)
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
-    })
-    .bind(("0.0.0.0", 8080))?
-    .run()
-    .await
+            .service(api::hello)
+            .service(api::echo)
+            .route("/hey", web::get().to(api::manual_hello))
+    };
+
+    debug!("Starting server: http://0.0.0.0:8080");
+    HttpServer::new(app).bind(("0.0.0.0", 8080))?.run().await
 }
