@@ -19,6 +19,12 @@ async fn main() -> io::Result<()> {
             .service(api::hello)
             .service(api::echo)
             .route("/hey", web::get().to(api::manual_hello))
+            .service(api::posts::list)
+            .service(api::posts::create)
+            .service(api::posts::detail)
+            .service(api::posts::update)
+            .service(api::posts::delete)
+
     };
 
     debug!("Starting server: http://0.0.0.0:8080");
