@@ -1,6 +1,6 @@
 use crate::db::schema::posts::dsl::*;
 use crate::db::establish_connection;
-use crate::db::models::Post;
+use crate::db::models::{Post, NewPost};
 
 use actix_web::{get, post, patch, delete, web, HttpResponse};
 use diesel::prelude::*;
@@ -16,8 +16,21 @@ async fn list() -> HttpResponse {
 }
 
 #[post("/posts")]
-async fn create() -> HttpResponse {
-    HttpResponse::Ok().body("posts create")
+async fn create(info: web::Json<NewPost>) -> HttpResponse {
+    let conn = &mut establish_connection();
+
+    let new_post = NewPost {
+        title: info.title.clone(),
+        body: info.body.clone(),
+        published: info.published,
+    };
+
+    let post: Post = diesel::insert_into(posts)
+        .values(&new_post)
+        .get_result(conn)
+        .expect("Error saving new post");
+
+    HttpResponse::Created().json(post)
 }
 
 #[get("/posts/{post_id}")]

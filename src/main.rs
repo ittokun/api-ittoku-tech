@@ -6,6 +6,7 @@ use std::{env, io};
 use actix_web::{web, App, HttpServer};
 
 mod api;
+mod db;
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
@@ -24,7 +25,6 @@ async fn main() -> io::Result<()> {
             .service(api::posts::detail)
             .service(api::posts::update)
             .service(api::posts::delete)
-
     };
 
     debug!("Starting server: http://0.0.0.0:8080");
