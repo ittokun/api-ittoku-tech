@@ -34,10 +34,15 @@ async fn create(info: web::Json<NewPost>) -> HttpResponse {
 }
 
 #[get("/posts/{post_id}")]
-async fn detail(path: web::Path<u32>) -> HttpResponse {
+async fn detail(path: web::Path<i32>) -> HttpResponse {
     let post_id = path.into_inner();
+    let conn = &mut establish_connection();
 
-    HttpResponse::Ok().body(format!("posts detail {}", post_id))
+    let post = posts.filter(id.eq(post_id))
+        .get_result::<Post>(conn)
+        .expect("Post Not Found");
+
+    HttpResponse::Ok().json(post)
 }
 
 #[patch("/posts/{post_id}")]
