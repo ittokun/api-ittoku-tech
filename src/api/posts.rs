@@ -65,8 +65,13 @@ async fn update(path: web::Path<i32>, info: web::Json<NewPost>) -> HttpResponse 
 }
 
 #[delete("/posts/{post_id}")]
-async fn delete(path: web::Path<u32>) -> HttpResponse {
+async fn delete(path: web::Path<i32>) -> HttpResponse {
     let post_id = path.into_inner();
+    let conn = &mut establish_connection();
 
-    HttpResponse::Ok().body(format!("posts delete {}", post_id))
+    let post = diesel::delete(posts.find(post_id))
+        .get_result::<Post>(conn)
+        .expect("Post Not Found");
+
+    HttpResponse::Ok().json(post)
 }
