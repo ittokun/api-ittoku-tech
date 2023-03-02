@@ -1,3 +1,15 @@
+# Development
+
+FROM rust:latest as develop
+WORKDIR /app
+
+RUN cargo install diesel_cli --no-default-features --features postgres
+RUN cargo install cargo-watch
+
+COPY . .
+
+# Production
+
 FROM rust:latest as builder
 
 # Make a fake Rust app to keep a cached layer of compiled crates
