@@ -11,7 +11,7 @@ pub struct Post {
     pub published: bool,
 }
 
-#[derive(Debug, Insertable, Serialize, Deserialize)]
+#[derive(Debug, Insertable, AsChangeset, Serialize, Deserialize)]
 #[diesel(table_name = posts)]
 pub struct NewPost {
     pub title: String,

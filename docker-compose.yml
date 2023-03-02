@@ -8,8 +8,8 @@ services:
       target: develop
     volumes:
       - ./:/app
-      - ./tmp/cargo-cache:/usr/local/cargo/registry
-      - ./tmp/target-cache:/app/target
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
     environment:
       USER: root
       DATABASE_URL: "postgres://root:password@db:5432/db_development"
@@ -31,3 +31,7 @@ services:
         POSTGRES_PASSWORD: password
         POSTGRES_INITDB_ARGS: --encoding=UTF-8
         POSTGRES_DB: db_development
+
+volumes:
+  cargo-cache: {}
+  target-cache: {}

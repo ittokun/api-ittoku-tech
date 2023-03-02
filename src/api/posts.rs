@@ -46,10 +46,22 @@ async fn detail(path: web::Path<i32>) -> HttpResponse {
 }
 
 #[patch("/posts/{post_id}")]
-async fn update(path: web::Path<u32>) -> HttpResponse {
+async fn update(path: web::Path<i32>, info: web::Json<NewPost>) -> HttpResponse {
     let post_id = path.into_inner();
+    let conn = &mut establish_connection();
 
-    HttpResponse::Ok().body(format!("posts update {}", post_id))
+    let update_post = NewPost {
+        title: info.title.clone(),
+        body: info.body.clone(),
+        published: info.published,
+    };
+
+    let post = diesel::update(posts.find(post_id))
+        .set(update_post)
+        .get_result::<Post>(conn)
+        .expect("Post Not Found");
+
+    HttpResponse::Ok().json(post)
 }
 
 #[delete("/posts/{post_id}")]
