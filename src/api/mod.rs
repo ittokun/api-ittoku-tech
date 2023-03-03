@@ -1,5 +1,7 @@
 use actix_web::{get, post, HttpResponse, Responder};
 
+pub mod posts;
+
 #[get("/")]
 pub async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")

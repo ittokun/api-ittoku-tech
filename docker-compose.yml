@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  api:
+    container_name: rust
+    build:
+      context: ./
+      target: develop
+    volumes:
+      - ./:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    environment:
+      USER: root
+      DATABASE_URL: "postgres://root:password@db:5432/db_development"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    command: cargo watch -x run -w src
+
+  db:
+    image: "postgres:14"
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data/pgdata
+    environment:
+        POSTGRES_USER: root
+        POSTGRES_PASSWORD: password
+        POSTGRES_INITDB_ARGS: --encoding=UTF-8
+        POSTGRES_DB: db_development
+        PGDATA: /var/lib/postgresql/data/pgdata
+
+volumes:
+  cargo-cache: {}
+  target-cache: {}
+  pgdata: {}
