@@ -42,5 +42,5 @@ make db-access
 rustにアクセスするには以下のコマンドを実行します。
 
 ```bash
-make db-bash
+make api-bash
 ```
