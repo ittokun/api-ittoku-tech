@@ -13,6 +13,8 @@ async fn main() -> io::Result<()> {
     env::set_var("RUST_LOG", "ittoku_api=debug,actix_web=info");
     env_logger::init();
 
+    db::db_migrations();
+
     let app = || {
         debug!("Constructing the App");
 
