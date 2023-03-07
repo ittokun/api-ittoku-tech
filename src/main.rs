@@ -1,24 +1,23 @@
-#[macro_use]
-extern crate log;
-
-use std::{env, io};
-
 use actix_web::{web, App, HttpServer};
+use actix_web::middleware::Logger;
+use log::debug;
 
 mod api;
 mod db;
 
 #[actix_web::main]
-async fn main() -> io::Result<()> {
-    env::set_var("RUST_LOG", "ittoku_api=debug,actix_web=info");
+async fn main() -> std::io::Result<()> {
+    std::env::set_var("RUST_LOG", "info,debug");
+    std::env::set_var("RUST_BACKTRACE", "1");
     env_logger::init();
 
     db::db_migrations();
 
     let app = || {
-        debug!("Constructing the App");
+        let logger = Logger::default();
 
         App::new()
+            .wrap(logger)
             .service(api::hello)
             .service(api::echo)
             .route("/hey", web::get().to(api::manual_hello))
