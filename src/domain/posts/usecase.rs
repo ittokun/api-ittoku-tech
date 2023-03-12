@@ -1,7 +1,14 @@
-use crate::domain::posts::Posts;
+use crate::domain::posts::{Posts, Post};
 use crate::error_handler::CustomError;
 
-pub async fn find_all() -> Result<Vec<Posts>, CustomError> {
+pub async fn find_all() -> Result<String, CustomError> {
     let posts = Posts::find_all()?;
+    let posts = serde_json::to_string_pretty(&posts).unwrap();
     Ok(posts)
+}
+
+pub async fn create(post: Post) -> Result<String, CustomError> {
+    let post = Posts::create(post)?;
+    let post = serde_json::to_string_pretty(&post).unwrap();
+    Ok(post)
 }
