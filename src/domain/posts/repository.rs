@@ -19,4 +19,10 @@ impl Posts {
             .get_result(conn)?;
         Ok(post)
     }
+
+    pub fn find(id: i32) -> Result<Self, CustomError> {
+        let conn = &mut db::connection()?;
+        let post = posts::table.filter(posts::id.eq(id)).first(conn)?;
+        Ok(post)
+    }
 }

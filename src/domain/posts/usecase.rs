@@ -12,3 +12,9 @@ pub async fn create(post: Post) -> Result<String, CustomError> {
     let post = serde_json::to_string_pretty(&post).unwrap();
     Ok(post)
 }
+
+pub async fn find_by_id(id: i32) -> Result<String, CustomError> {
+    let post = Posts::find(id)?;
+    let post = serde_json::to_string_pretty(&post).unwrap();
+    Ok(post)
+}
