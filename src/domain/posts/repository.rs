@@ -34,4 +34,12 @@ impl Posts {
             .get_result(conn)?;
         Ok(post)
     }
+
+    pub fn delete(id: i32) -> Result<Self, CustomError> {
+        let conn = &mut db::connection()?;
+        let post = diesel::delete(posts::table)
+            .filter(posts::id.eq(id))
+            .get_result(conn)?;
+        Ok(post)
+    }
 }
