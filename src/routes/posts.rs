@@ -1,7 +1,7 @@
 use crate::domain::posts::{usecase, Post};
 use crate::error_handler::CustomError;
 
-use actix_web::{get, post, web, HttpResponse, HttpRequest};
+use actix_web::{get, post, patch, web, HttpResponse, HttpRequest};
 
 #[get("/posts")]
 async fn find_all() -> Result<HttpResponse, CustomError> {
@@ -22,8 +22,16 @@ async fn detail(req: HttpRequest) -> Result<HttpResponse, CustomError> {
     Ok(HttpResponse::Ok().body(post))
 }
 
+#[patch("/posts/{id}")]
+async fn update(req: HttpRequest, post: web::Json<Post>) -> Result<HttpResponse, CustomError> {
+    let id: i32 = req.match_info().query("id").parse().unwrap_or_default();
+    let post = usecase::update(id, post.into_inner()).await?;
+    Ok(HttpResponse::Ok().body(post))
+}
+
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(find_all);
     cfg.service(create);
     cfg.service(detail);
+    cfg.service(update);
 }

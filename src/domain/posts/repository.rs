@@ -25,4 +25,13 @@ impl Posts {
         let post = posts::table.filter(posts::id.eq(id)).first(conn)?;
         Ok(post)
     }
+
+    pub fn update(id: i32, post: Post) -> Result<Self, CustomError> {
+        let conn = &mut db::connection()?;
+        let post = diesel::update(posts::table)
+            .filter(posts::id.eq(id))
+            .set(post)
+            .get_result(conn)?;
+        Ok(post)
+    }
 }
