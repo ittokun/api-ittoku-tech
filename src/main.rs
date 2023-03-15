@@ -1,9 +1,13 @@
-use actix_web::{web, App, HttpServer};
+use actix_web::{App, HttpServer};
 use actix_web::middleware::Logger;
 use log::debug;
 
-mod api;
+mod app;
 mod db;
+mod domain;
+mod error_handler;
+mod routes;
+mod schema;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -11,21 +15,14 @@ async fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     env_logger::init();
 
-    db::db_migrations();
+    db::init();
 
     let app = || {
         let logger = Logger::default();
 
         App::new()
             .wrap(logger)
-            .service(api::hello)
-            .service(api::echo)
-            .route("/hey", web::get().to(api::manual_hello))
-            .service(api::posts::list)
-            .service(api::posts::create)
-            .service(api::posts::detail)
-            .service(api::posts::update)
-            .service(api::posts::delete)
+            .configure(app::init)
     };
 
     debug!("Starting server: http://0.0.0.0:8080");
