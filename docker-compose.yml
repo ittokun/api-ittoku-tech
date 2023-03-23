@@ -33,7 +33,7 @@ services:
         POSTGRES_USER: root
         POSTGRES_PASSWORD: password
         POSTGRES_INITDB_ARGS: --encoding=UTF-8
-        POSTGRES_DB: db_development
+        POSTGRES_DB: ittoku_api
         PGDATA: /var/lib/postgresql/data/pgdata
 
 volumes:

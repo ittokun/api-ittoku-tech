@@ -7,10 +7,12 @@ use std::env;
 
 mod api_error;
 mod posts;
+mod db;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
+    db::init();
 
     let host = env::var("HOST").expect("Host not set");
     let port = env::var("PORT").expect("Port not set");
