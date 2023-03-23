@@ -3,3 +3,6 @@ db-access:
 
 api-bash:
 	docker-compose exec api bash
+
+api-test:
+	docker-compose exec api cargo test
