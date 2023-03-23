@@ -17,6 +17,12 @@ docker-compose up
 curl http://0.0.0.0:8080
 ```
 
+アプリを終了するときは以下のコマンドを実行します。
+
+```bash
+docker-compose down
+```
+
 **データベース**
 
 PostgreSQLにアクセスするには以下のコマンドを実行します。
