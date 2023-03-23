@@ -5,5 +5,5 @@ CREATE TABLE "posts" (
 	title VARCHAR NOT NULL,
 	body TEXT NOT NULL,
 	created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
-	updated_at TIMESTAMP
+	updated_at TIMESTAMP NOT NULL DEFAULT current_timestamp
 );

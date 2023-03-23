@@ -1,49 +1,39 @@
-use actix_web::{delete, get, patch, post, web, HttpResponse};
-
-use crate::posts::Post;
+use crate::api_error::ApiError;
+use crate::posts::{Post, PostParams};
+use actix_web::{delete, get, patch, post, web, HttpRequest, HttpResponse, Result};
+use uuid::Uuid;
 
 #[get("/posts")]
-async fn find_all() -> HttpResponse {
-    HttpResponse::Ok().json(vec![
-        Post {
-            id: 1,
-            title: "First Post".to_string(),
-            body: "Hello World!".to_string(),
-        },
-        Post {
-            id: 2,
-            title: "Second Post".to_string(),
-            body: "Good Morning!".to_string(),
-        },
-    ])
+async fn find_all() -> Result<HttpResponse, ApiError> {
+    let posts = Post::find_all()?;
+    Ok(HttpResponse::Ok().json(posts))
 }
 
 #[get("/posts/{id}")]
-async fn find() -> HttpResponse {
-    HttpResponse::Ok().json(Post {
-        id: 1,
-        title: "First Post".to_string(),
-        body: "Hello World!".to_string(),
-    })
+async fn find(req: HttpRequest) -> Result<HttpResponse, ApiError> {
+    let id: Uuid = req.match_info().query("id").parse().unwrap_or_default();
+    let post = Post::find(id)?;
+    Ok(HttpResponse::Ok().json(post))
 }
 
 #[post("/posts")]
-async fn create(post: web::Json<Post>) -> HttpResponse {
-    HttpResponse::Ok().json(post.into_inner())
+async fn create(post: web::Json<PostParams>) -> Result<HttpResponse, ApiError> {
+    let post = Post::create(post.into_inner())?;
+    Ok(HttpResponse::Created().json(post))
 }
 
 #[patch("/posts/{id}")]
-async fn update(post: web::Json<Post>) -> HttpResponse {
-    HttpResponse::Ok().json(post.into_inner())
+async fn update(req: HttpRequest, post: web::Json<PostParams>) -> Result<HttpResponse, ApiError> {
+    let id: Uuid = req.match_info().query("id").parse().unwrap_or_default();
+    let post = Post::update(id, post.into_inner())?;
+    Ok(HttpResponse::Ok().json(post))
 }
 
 #[delete("/posts/{id}")]
-async fn delete() -> HttpResponse {
-    HttpResponse::Ok().json(Post {
-        id: 3,
-        title: "Third Post".to_string(),
-        body: "Good Night!".to_string(),
-    })
+async fn delete(req: HttpRequest) -> Result<HttpResponse, ApiError> {
+    let id: Uuid = req.match_info().query("id").parse().unwrap_or_default();
+    let post = Post::delete(id)?;
+    Ok(HttpResponse::Ok().json(post))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
