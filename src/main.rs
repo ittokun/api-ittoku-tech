@@ -8,6 +8,7 @@ use std::env;
 mod api_error;
 mod posts;
 mod db;
+mod schema;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

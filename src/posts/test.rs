@@ -3,7 +3,9 @@ mod routes {
     use crate::posts::*;
     use actix_web::test::{init_service, TestRequest};
     use actix_web::App;
+    use chrono::prelude::*;
     use serde_json::json;
+    use uuid::Uuid;
 
     #[actix_web::test]
     async fn find_all() {
@@ -23,9 +25,11 @@ mod routes {
     #[actix_web::test]
     async fn create() {
         let request_body = json!(Post {
-            id: 1,
+            id: Uuid::new_v4(),
             title: "Test Post".to_string(),
             body: "This is a Test".to_string(),
+            created_at: Utc::now().naive_utc(),
+            updated_at: Utc::now().naive_utc(),
         });
         let app = init_service(App::new().configure(init_routes)).await;
         let resp = TestRequest::post()
@@ -39,9 +43,11 @@ mod routes {
     #[actix_web::test]
     async fn update() {
         let request_body = json!(Post {
-            id: 1,
+            id: Uuid::new_v4(),
             title: "Test Post".to_string(),
             body: "This is a Test".to_string(),
+            created_at: Utc::now().naive_utc(),
+            updated_at: Utc::now().naive_utc(),
         });
         let app = init_service(App::new().configure(init_routes)).await;
         let resp = TestRequest::patch()
