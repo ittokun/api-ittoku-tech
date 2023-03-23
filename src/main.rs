@@ -2,13 +2,10 @@
 extern crate log;
 
 use actix_web::middleware::Logger;
-use actix_web::{get, App, HttpResponse, HttpServer};
+use actix_web::{App, HttpServer};
 use std::env;
 
-#[get("/")]
-async fn index() -> HttpResponse {
-    HttpResponse::Ok().body("Hello World!")
-}
+mod posts;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -16,9 +13,14 @@ async fn main() -> std::io::Result<()> {
 
     let host = env::var("HOST").expect("Host not set");
     let port = env::var("PORT").expect("Port not set");
+    let app = || {
+        App::new()
+            .wrap(Logger::default())
+            .configure(posts::init_routes)
+    };
 
     info!("Starting Server: http://{host}:{port}");
-    HttpServer::new(|| App::new().wrap(Logger::default()).service(index))
+    HttpServer::new(app)
         .bind(format!("{host}:{port}"))?
         .run()
         .await
