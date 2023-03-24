@@ -18,8 +18,9 @@ mod routes {
     #[actix_web::test]
     async fn find() {
         let app = init_service(App::new().configure(init_routes)).await;
+
         let resp = TestRequest::get().uri("/posts/1").send_request(&app).await;
-        assert!(resp.status().is_success(), "Failed to GET /posts/1");
+        assert!(resp.status().is_client_error(), "Failed to GET /posts/1");
     }
 
     #[actix_web::test]

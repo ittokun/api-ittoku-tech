@@ -22,4 +22,10 @@ impl Post {
         let posts = posts::table.load::<Post>(conn)?;
         Ok(posts)
     }
+
+    pub fn find(id: Uuid) -> Result<Self, ApiError> {
+        let conn = &mut db::connection()?;
+        let post = posts::table.filter(posts::id.eq(id)).first(conn)?;
+        Ok(post)
+    }
 }

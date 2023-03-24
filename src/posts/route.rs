@@ -1,9 +1,9 @@
 use crate::api_error::ApiError;
 use crate::posts::Post;
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use actix_web::{delete, get, patch, post, web, HttpRequest, HttpResponse};
 
-use uuid::Uuid;
 use chrono::prelude::*;
+use uuid::Uuid;
 
 #[get("/posts")]
 async fn find_all() -> Result<HttpResponse, ApiError> {
@@ -12,14 +12,10 @@ async fn find_all() -> Result<HttpResponse, ApiError> {
 }
 
 #[get("/posts/{id}")]
-async fn find() -> HttpResponse {
-    HttpResponse::Ok().json(Post {
-        id: Uuid::new_v4(),
-        title: "First Post".to_string(),
-        body: "Hello World!".to_string(),
-        created_at: Utc::now().naive_utc(),
-        updated_at: Utc::now().naive_utc(),
-    })
+async fn find(req: HttpRequest) -> Result<HttpResponse, ApiError> {
+    let id: Uuid = req.match_info().query("id").parse().unwrap_or_default();
+    let post = Post::find(id)?;
+    Ok(HttpResponse::Ok().json(post))
 }
 
 #[post("/posts")]
@@ -40,7 +36,7 @@ async fn delete() -> HttpResponse {
         body: "Good Night!".to_string(),
         created_at: Utc::now().naive_utc(),
         updated_at: Utc::now().naive_utc(),
-     })
+    })
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
