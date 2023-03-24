@@ -1,6 +1,6 @@
 use crate::api_error::ApiError;
-use crate::posts::Post;
-use actix_web::{delete, get, patch, post, web, HttpRequest, HttpResponse};
+use crate::posts::{Post, PostParams};
+use actix_web::{delete, get, patch, post, web, HttpRequest, HttpResponse, Result};
 
 use chrono::prelude::*;
 use uuid::Uuid;
@@ -19,8 +19,9 @@ async fn find(req: HttpRequest) -> Result<HttpResponse, ApiError> {
 }
 
 #[post("/posts")]
-async fn create(post: web::Json<Post>) -> HttpResponse {
-    HttpResponse::Ok().json(post.into_inner())
+async fn create(post: web::Json<PostParams>) -> Result<HttpResponse, ApiError> {
+    let post = Post::create(post.into_inner())?;
+    Ok(HttpResponse::Created().json(post))
 }
 
 #[patch("/posts/{id}")]

@@ -25,14 +25,11 @@ mod routes {
 
     #[actix_web::test]
     async fn create() {
-        let request_body = json!(Post {
-            id: Uuid::new_v4(),
-            title: "Test Post".to_string(),
-            body: "This is a Test".to_string(),
-            created_at: Utc::now().naive_utc(),
-            updated_at: Utc::now().naive_utc(),
-        });
         let app = init_service(App::new().configure(init_routes)).await;
+        let request_body = json!({
+            "title": "Test Post",
+            "body":  "This is a Test",
+        });
         let resp = TestRequest::post()
             .uri("/posts")
             .set_json(&request_body)
