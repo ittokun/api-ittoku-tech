@@ -25,8 +25,10 @@ async fn create(post: web::Json<PostParams>) -> Result<HttpResponse, ApiError> {
 }
 
 #[patch("/posts/{id}")]
-async fn update(post: web::Json<Post>) -> HttpResponse {
-    HttpResponse::Ok().json(post.into_inner())
+async fn update(req: HttpRequest, post: web::Json<PostParams>) -> Result<HttpResponse, ApiError> {
+    let id: Uuid = req.match_info().query("id").parse().unwrap_or_default();
+    let post = Post::update(id, post.into_inner())?;
+    Ok(HttpResponse::Ok().json(post))
 }
 
 #[delete("/posts/{id}")]

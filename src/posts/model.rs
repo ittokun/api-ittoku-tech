@@ -6,7 +6,7 @@ use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Deserialize, Serialize, Queryable, Insertable)]
+#[derive(Debug, PartialEq, Deserialize, Serialize, Queryable, Insertable)]
 #[diesel(table_name = posts)]
 pub struct Post {
     pub id: Uuid,
@@ -21,6 +21,7 @@ pub struct Post {
 pub struct PostParams {
     pub title: String,
     pub body: String,
+    pub updated_at: Option<NaiveDateTime>,
 }
 
 impl Post {
@@ -44,16 +45,36 @@ impl Post {
             .get_result(conn)?;
         Ok(post)
     }
+
+    pub fn update(id: Uuid, post: PostParams) -> Result<Self, ApiError> {
+        let conn = &mut db::connection()?;
+        let post = PostParams::from(post);
+        let post = diesel::update(posts::table)
+            .filter(posts::id.eq(id))
+            .set(post)
+            .get_result(conn)?;
+        Ok(post)
+    }
 }
 
 impl From<PostParams> for Post {
-    fn from(value: PostParams) -> Self {
+    fn from(post: PostParams) -> Self {
         Post {
             id: Uuid::new_v4(),
-            title: value.title,
-            body: value.body,
+            title: post.title,
+            body: post.body,
             created_at: Utc::now().naive_utc(),
             updated_at: Utc::now().naive_utc(),
+        }
+    }
+}
+
+impl PostParams {
+    fn from(post: PostParams) -> Self {
+        PostParams {
+            title: post.title,
+            body: post.body,
+            updated_at: Some(Utc::now().naive_utc()),
         }
     }
 }
