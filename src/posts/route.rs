@@ -1,11 +1,12 @@
 use crate::api_error::ApiError;
-use crate::posts::{Post, PostParams};
+use crate::posts::*;
 use actix_web::{delete, get, patch, post, web, HttpRequest, HttpResponse, Result};
 use uuid::Uuid;
 
 #[get("/posts")]
 async fn find_all() -> Result<HttpResponse, ApiError> {
     let posts = Post::find_all()?;
+    let posts = PostFindAll::new(posts.len(), posts);
     Ok(HttpResponse::Ok().json(posts))
 }
 
