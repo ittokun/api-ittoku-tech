@@ -12,8 +12,8 @@ mod routes {
         // let post = create_post();
         let resp = TestRequest::get().uri("/posts").send_request(&app).await;
         assert!(resp.status().is_success(), "Failed to GET /posts");
-        // let resp: Vec<Post> = read_body_json(resp).await;
-        // assert_eq!(resp, vec![post], "No output find all post");
+        // let resp: PostFindAll = read_body_json(resp).await;
+        // assert_eq!(resp.posts, vec![post], "No output find all post");
     }
 
     #[actix_web::test]

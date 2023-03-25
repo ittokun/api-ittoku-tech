@@ -86,3 +86,15 @@ impl PostParams {
         }
     }
 }
+
+#[derive(Deserialize, Serialize)]
+pub struct PostFindAll {
+    pub total_count: usize,
+    pub posts: Vec<Post>,
+}
+
+impl PostFindAll {
+    pub fn new(total_count: usize, posts: Vec<Post>) -> Self {
+        PostFindAll { total_count, posts }
+    }
+}
