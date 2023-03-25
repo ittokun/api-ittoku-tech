@@ -55,6 +55,14 @@ impl Post {
             .get_result(conn)?;
         Ok(post)
     }
+
+    pub fn delete(id: Uuid) -> Result<Self, ApiError> {
+        let conn = &mut db::connection()?;
+        let post = diesel::delete(posts::table)
+            .filter(posts::id.eq(id))
+            .get_result(conn)?;
+        Ok(post)
+    }
 }
 
 impl From<PostParams> for Post {

@@ -1,8 +1,6 @@
 use crate::api_error::ApiError;
 use crate::posts::{Post, PostParams};
 use actix_web::{delete, get, patch, post, web, HttpRequest, HttpResponse, Result};
-
-use chrono::prelude::*;
 use uuid::Uuid;
 
 #[get("/posts")]
@@ -32,14 +30,10 @@ async fn update(req: HttpRequest, post: web::Json<PostParams>) -> Result<HttpRes
 }
 
 #[delete("/posts/{id}")]
-async fn delete() -> HttpResponse {
-    HttpResponse::Ok().json(Post {
-        id: Uuid::new_v4(),
-        title: "Third Post".to_string(),
-        body: "Good Night!".to_string(),
-        created_at: Utc::now().naive_utc(),
-        updated_at: Utc::now().naive_utc(),
-    })
+async fn delete(req: HttpRequest) -> Result<HttpResponse, ApiError> {
+    let id: Uuid = req.match_info().query("id").parse().unwrap_or_default();
+    let post = Post::delete(id)?;
+    Ok(HttpResponse::Ok().json(post))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
