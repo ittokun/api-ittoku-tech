@@ -7,16 +7,13 @@ use std::fmt;
 
 #[derive(Debug, Deserialize)]
 pub struct ApiError {
-    pub status_code: u16,
+    pub code: u16,
     pub message: String,
 }
 
 impl ApiError {
-    pub fn new(status_code: u16, message: String) -> ApiError {
-        ApiError {
-            status_code,
-            message,
-        }
+    pub fn new(code: u16, message: String) -> ApiError {
+        ApiError { code, message }
     }
 }
 
@@ -27,8 +24,8 @@ impl fmt::Display for ApiError {
 }
 
 impl From<DieselError> for ApiError {
-    fn from(value: DieselError) -> Self {
-        match value {
+    fn from(error: DieselError) -> Self {
+        match error {
             DieselError::DatabaseError(_, err) => ApiError::new(409, err.message().to_string()),
             DieselError::NotFound => ApiError::new(404, "Not Found".to_string()),
             err => ApiError::new(500, format!("Diesel error: {}", err)),
@@ -38,12 +35,12 @@ impl From<DieselError> for ApiError {
 
 impl ResponseError for ApiError {
     fn error_response(&self) -> HttpResponse<actix_web::body::BoxBody> {
-        let status_code = match StatusCode::from_u16(self.status_code) {
-            Ok(status_code) => status_code,
+        let status = match StatusCode::from_u16(self.code) {
+            Ok(status) => status,
             Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
-        let message = match status_code.as_u16() < 500 {
+        let message = match status.as_u16() < 500 {
             true => self.message.clone(),
             false => {
                 error!("{}", self.message);
@@ -51,6 +48,6 @@ impl ResponseError for ApiError {
             }
         };
 
-        HttpResponse::build(status_code).json(json!({ "message": message }))
+        HttpResponse::build(status).json(json!({ "message": message }))
     }
 }

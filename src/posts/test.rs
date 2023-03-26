@@ -11,7 +11,7 @@ mod routes {
         let app = init_service(App::new().configure(init_routes)).await;
         // let post = create_post();
         let resp = TestRequest::get().uri("/posts").send_request(&app).await;
-        assert!(resp.status().is_success(), "Failed to GET /posts");
+        assert!(resp.status().is_success());
         // let resp: PostFindAll = read_body_json(resp).await;
         // assert_eq!(resp.posts, vec![post], "No output find all post");
     }
@@ -20,28 +20,41 @@ mod routes {
     async fn find() {
         let app = init_service(App::new().configure(init_routes)).await;
         let post = create_post();
+        // failre test
+        let resp_not_found = RESP_NOT_FOUND.to_owned();
+        let resp = TestRequest::get()
+            .uri("/posts/asdf")
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        assert_eq!(resp, resp_not_found);
+        // success test
         let resp = TestRequest::get()
             .uri(&format!("/posts/{}", post.id))
             .send_request(&app)
             .await;
-        assert!(resp.status().is_success(), "Failed to GET /posts/:id");
+        assert!(resp.status().is_success());
         let resp: Post = read_body_json(resp).await;
-        assert_eq!(post, resp, "No output find post");
+        assert_eq!(post, resp);
+        // initialize post
         delete_post(resp);
     }
 
     #[actix_web::test]
     async fn create() {
         let app = init_service(App::new().configure(init_routes)).await;
-        let request_body = REQUEST_BODY.to_owned();
+        // success test
+        let request_body = VALID_JSON.to_owned();
         let resp = TestRequest::post()
             .uri("/posts")
             .set_json(&request_body)
             .send_request(&app)
             .await;
-        assert!(resp.status().is_success(), "Failed to POST /posts");
+        assert!(resp.status().is_success());
         let resp: Post = read_body_json(resp).await;
-        assert_eq!(resp.title, "Test Post", "No output create post");
+        assert_eq!(resp.title, "Test Post");
+        // initialize post
         delete_post(resp);
     }
 
@@ -49,16 +62,28 @@ mod routes {
     async fn update() {
         let app = init_service(App::new().configure(init_routes)).await;
         let post = create_post();
-        let request_body = REQUEST_BODY.to_owned();
+        // success test
+        let request_body = VALID_JSON.to_owned();
+        let resp = TestRequest::patch()
+            .uri("/posts/asdf")
+            .set_json(&request_body)
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        let resp_not_found = RESP_NOT_FOUND.to_owned();
+        assert_eq!(resp, resp_not_found);
+        // success test
         let resp = TestRequest::patch()
             .uri(&format!("/posts/{}", post.id))
             .set_json(&request_body)
             .send_request(&app)
             .await;
-        assert!(resp.status().is_success(), "Failed to PATCH /posts/:id");
+        assert!(resp.status().is_success());
         let resp: Post = read_body_json(resp).await;
-        assert_ne!(post, resp, "No changed post");
-        assert_ne!(post.updated_at, resp.updated_at, "No changed updated at");
+        assert_ne!(post, resp);
+        assert_ne!(post.updated_at, resp.updated_at);
+        // initialize post
         delete_post(resp);
     }
 
@@ -66,26 +91,38 @@ mod routes {
     async fn delete() {
         let app = init_service(App::new().configure(init_routes)).await;
         let post = create_post();
+        // failre test
+        let resp_not_found = RESP_NOT_FOUND.to_owned();
+        let resp = TestRequest::delete()
+            .uri("/posts/asdf")
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        assert_eq!(resp, resp_not_found);
+        // success test
         let resp = TestRequest::delete()
             .uri(&format!("/posts/{}", post.id))
             .send_request(&app)
             .await;
-        assert!(resp.status().is_success(), "Failed to DELETE /posts/:id");
+        assert!(resp.status().is_success());
         let resp: Post = read_body_json(resp).await;
-        assert_eq!(post, resp, "No output delete post");
+        assert_eq!(post, resp);
         let resp = TestRequest::get()
             .uri(&format!("/posts/{}", post.id))
             .send_request(&app)
             .await;
-        assert!(resp.status().is_client_error(), "Failed delete post");
+        assert!(resp.status().is_client_error());
     }
 
-    static REQUEST_BODY: Lazy<Value> = Lazy::new(|| {
+    static VALID_JSON: Lazy<Value> = Lazy::new(|| {
         json!({
             "title": "Test Post",
             "body":  "This is a Test",
         })
     });
+
+    static RESP_NOT_FOUND: Lazy<Value> = Lazy::new(|| json!({"message": "Not Found".to_string()}));
 
     fn create_post() -> Post {
         let post = PostParams {
