@@ -122,7 +122,8 @@ mod routes {
         })
     });
 
-    static RESP_NOT_FOUND: Lazy<Value> = Lazy::new(|| json!({"message": "Not Found".to_string()}));
+    static RESP_NOT_FOUND: Lazy<Value> =
+        Lazy::new(|| json!({"code": 404, "message": "Not Found".to_string()}));
 
     fn create_post() -> Post {
         let post = PostParams {
