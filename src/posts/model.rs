@@ -5,6 +5,7 @@ use chrono::prelude::*;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use validator::Validate;
 
 #[derive(Debug, PartialEq, Deserialize, Serialize, Queryable, Insertable)]
 #[diesel(table_name = posts)]
@@ -16,10 +17,12 @@ pub struct Post {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(Deserialize, Serialize, AsChangeset)]
+#[derive(Debug, Deserialize, Serialize, Validate, AsChangeset)]
 #[diesel(table_name = posts)]
 pub struct PostParams {
+    #[validate(length(min = 1, max = 256))]
     pub title: String,
+    #[validate(length(min = 1, max = 65536))]
     pub body: String,
     pub updated_at: Option<NaiveDateTime>,
 }
