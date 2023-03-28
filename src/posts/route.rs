@@ -3,6 +3,7 @@ use crate::posts::*;
 use actix_web::{delete, get, patch, post, web, HttpRequest, HttpResponse, Result};
 use serde_json::to_string_pretty;
 use uuid::Uuid;
+use validator::Validate;
 
 #[get("/posts")]
 async fn find_all() -> Result<HttpResponse, ApiError> {
@@ -22,6 +23,7 @@ async fn find(req: HttpRequest) -> Result<HttpResponse, ApiError> {
 
 #[post("/posts")]
 async fn create(post: web::Json<PostParams>) -> Result<HttpResponse, ApiError> {
+    post.validate()?;
     let post = Post::create(post.into_inner())?;
     let post = to_string_pretty(&post).unwrap();
     Ok(HttpResponse::Created().body(post))
@@ -29,6 +31,7 @@ async fn create(post: web::Json<PostParams>) -> Result<HttpResponse, ApiError> {
 
 #[patch("/posts/{id}")]
 async fn update(req: HttpRequest, post: web::Json<PostParams>) -> Result<HttpResponse, ApiError> {
+    post.validate()?;
     let id: Uuid = req.match_info().query("id").parse().unwrap_or_default();
     let post = Post::update(id, post.into_inner())?;
     let post = to_string_pretty(&post).unwrap();

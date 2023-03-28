@@ -5,7 +5,7 @@ use chrono::prelude::*;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use validator::Validate;
+use validator::{Validate, ValidationError};
 
 #[derive(Debug, PartialEq, Deserialize, Serialize, Queryable, Insertable)]
 #[diesel(table_name = posts)]
@@ -20,9 +20,9 @@ pub struct Post {
 #[derive(Debug, Deserialize, Serialize, Validate, AsChangeset)]
 #[diesel(table_name = posts)]
 pub struct PostParams {
-    #[validate(length(min = 1, max = 256))]
+    #[validate(custom = "validate_title")]
     pub title: String,
-    #[validate(length(min = 1, max = 65536))]
+    #[validate(custom = "validate_body")]
     pub body: String,
     pub updated_at: Option<NaiveDateTime>,
 }
@@ -100,4 +100,24 @@ impl PostFindAll {
     pub fn new(total_count: usize, posts: Vec<Post>) -> Self {
         PostFindAll { total_count, posts }
     }
+}
+
+fn validate_title(title: &str) ->Result<(), ValidationError> {
+    if title.is_empty() {
+        return Err(ValidationError::new("title is required"));
+    } else if title.len() > 256 {
+        return Err(ValidationError::new("title is too long"));
+    }
+
+    Ok(())
+}
+
+fn validate_body(body: &str) ->Result<(), ValidationError> {
+    if body.is_empty() {
+        return Err(ValidationError::new("body is required"));
+    } else if body.len() > 65536 {
+        return Err(ValidationError::new("body is too long"));
+    }
+
+    Ok(())
 }
