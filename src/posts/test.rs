@@ -44,6 +44,43 @@ mod routes {
     #[actix_web::test]
     async fn create() {
         let app = init_service(App::new().configure(init_routes)).await;
+        // // No send POST data
+        // let resp = TestRequest::post()
+        //     .uri("/posts")
+        //     .set_json({})
+        //     .send_request(&app)
+        //     .await;
+        // assert!(resp.status().is_client_error());
+        // let resp: Value = read_body_json(resp).await;
+        // assert_eq!(
+        //     resp,
+        //     json!({ "errors": [
+        //         { "code": 422, "title": "title is required"},
+        //         { "code": 422, "body": "body is required"},
+        //     ]})
+        // );
+        // Empty POST data
+        let request_body = INVALID_JSON.to_owned();
+        let resp = TestRequest::post()
+            .uri("/posts")
+            .set_json(&request_body)
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        let required = RESP_REQUIRED.to_owned();
+        assert_eq!(resp, required);
+        // Too long POST data
+        let request_body = INVALID_JSON_2.to_owned();
+        let resp = TestRequest::post()
+            .uri("/posts")
+            .set_json(&request_body)
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        let too_long = RESP_TOO_LONG.to_owned();
+        assert_eq!(resp, too_long);
         // success test
         let request_body = VALID_JSON.to_owned();
         let resp = TestRequest::post()
@@ -62,7 +99,7 @@ mod routes {
     async fn update() {
         let app = init_service(App::new().configure(init_routes)).await;
         let post = create_post();
-        // success test
+        // Post not found
         let request_body = VALID_JSON.to_owned();
         let resp = TestRequest::patch()
             .uri("/posts/asdf")
@@ -73,7 +110,45 @@ mod routes {
         let resp: Value = read_body_json(resp).await;
         let resp_not_found = RESP_NOT_FOUND.to_owned();
         assert_eq!(resp, resp_not_found);
+        // // No send POST data
+        // let resp = TestRequest::patch()
+        //     .uri(&format!("/posts/{}", post.id))
+        //     .set_json({})
+        //     .send_request(&app)
+        //     .await;
+        // assert!(resp.status().is_client_error());
+        // let resp: Value = read_body_json(resp).await;
+        // assert_eq!(
+        //     resp,
+        //     json!({ "errors": [
+        //         { "code": 422, "title": "title is required"},
+        //         { "code": 422, "body": "body is required"},
+        //     ]})
+        // );
+        // Empty POST data
+        let request_body = INVALID_JSON.to_owned();
+        let resp = TestRequest::patch()
+            .uri(&format!("/posts/{}", post.id))
+            .set_json(&request_body)
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        let required = RESP_REQUIRED.to_owned();
+        assert_eq!(resp, required);
+        // Too long POST data
+        let request_body = INVALID_JSON_2.to_owned();
+        let resp = TestRequest::patch()
+            .uri(&format!("/posts/{}", post.id))
+            .set_json(&request_body)
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        let too_long = RESP_TOO_LONG.to_owned();
+        assert_eq!(resp, too_long);
         // success test
+        let request_body = VALID_JSON.to_owned();
         let resp = TestRequest::patch()
             .uri(&format!("/posts/{}", post.id))
             .set_json(&request_body)
@@ -122,7 +197,36 @@ mod routes {
         })
     });
 
-    static RESP_NOT_FOUND: Lazy<Value> = Lazy::new(|| json!({"message": "Not Found".to_string()}));
+    static INVALID_JSON: Lazy<Value> = Lazy::new(|| {
+        json!({
+            "title": "",
+            "body":  "",
+        })
+    });
+
+    static INVALID_JSON_2: Lazy<Value> = Lazy::new(|| {
+        json!({
+            "title": "a".repeat(257),
+            "body":  "a".repeat(65537),
+        })
+    });
+
+    static RESP_NOT_FOUND: Lazy<Value> =
+        Lazy::new(|| json!({"code": 404, "message": "Not Found".to_string()}));
+
+    static RESP_REQUIRED: Lazy<Value> = Lazy::new(|| {
+        json!({ "errors": [
+            { "code": 422, "message": "body is required"},
+            { "code": 422, "message": "title is required"},
+        ]})
+    });
+
+    static RESP_TOO_LONG: Lazy<Value> = Lazy::new(|| {
+        json!({ "errors": [
+            { "code": 422, "message": "body is too long"},
+            { "code": 422, "message": "title is too long"},
+        ]})
+    });
 
     fn create_post() -> Post {
         let post = PostParams {
