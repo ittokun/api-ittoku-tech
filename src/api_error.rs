@@ -10,6 +10,7 @@ use validator::ValidationErrors;
 pub enum ApiError {
     NotFound,
     DatabaseError(String),
+    SerializeError(String),
     ValidationError(String),
     InternalServerError(String),
 }
@@ -78,6 +79,7 @@ impl ResponseError for ApiError {
         match self {
             ApiError::NotFound => StatusCode::NOT_FOUND,
             ApiError::DatabaseError(_) => StatusCode::CONFLICT,
+            ApiError::SerializeError(_) => StatusCode::BAD_REQUEST,
             ApiError::ValidationError(_) => StatusCode::UNPROCESSABLE_ENTITY,
             ApiError::InternalServerError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
@@ -92,6 +94,9 @@ impl ResponseError for ApiError {
                 HttpResponse::build(status).body(ApiResponse::new(status.as_u16(), message))
             }
             ApiError::DatabaseError(message) => {
+                HttpResponse::build(status).body(ApiResponse::new(status.as_u16(), message))
+            }
+            ApiError::SerializeError(message) => {
                 HttpResponse::build(status).body(ApiResponse::new(status.as_u16(), message))
             }
             ApiError::ValidationError(message) => {

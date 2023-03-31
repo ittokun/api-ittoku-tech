@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod routes {
+    use crate::config;
     use crate::posts::*;
     use actix_web::test::{init_service, read_body_json, TestRequest};
     use actix_web::App;
@@ -9,11 +10,14 @@ mod routes {
     #[actix_web::test]
     async fn find_all() {
         let app = init_service(App::new().configure(init_routes)).await;
-        // let post = create_post();
         let resp = TestRequest::get().uri("/posts").send_request(&app).await;
         assert!(resp.status().is_success());
+        // let post = create_post();
         // let resp: PostFindAll = read_body_json(resp).await;
-        // assert_eq!(resp.posts, vec![post], "No output find all post");
+        // assert_eq!(resp.posts, vec![post]);
+        // for post in resp.posts.iter() {
+        //     delete_post(post);
+        // }
     }
 
     #[actix_web::test]
@@ -43,22 +47,13 @@ mod routes {
 
     #[actix_web::test]
     async fn create() {
-        let app = init_service(App::new().configure(init_routes)).await;
-        // // No send POST data
-        // let resp = TestRequest::post()
-        //     .uri("/posts")
-        //     .set_json({})
-        //     .send_request(&app)
-        //     .await;
-        // assert!(resp.status().is_client_error());
-        // let resp: Value = read_body_json(resp).await;
-        // assert_eq!(
-        //     resp,
-        //     json!({ "errors": [
-        //         { "code": 422, "title": "title is required"},
-        //         { "code": 422, "body": "body is required"},
-        //     ]})
-        // );
+        let app = init_service(App::new().configure(config::init).configure(init_routes)).await;
+        // No send POST data
+        let resp = TestRequest::post().uri("/posts").send_request(&app).await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        let incorrect = RESP_INCORRECT.to_owned();
+        assert_eq!(resp, incorrect);
         // Empty POST data
         let request_body = INVALID_JSON.to_owned();
         let resp = TestRequest::post()
@@ -97,7 +92,7 @@ mod routes {
 
     #[actix_web::test]
     async fn update() {
-        let app = init_service(App::new().configure(init_routes)).await;
+        let app = init_service(App::new().configure(config::init).configure(init_routes)).await;
         let post = create_post();
         // Post not found
         let request_body = VALID_JSON.to_owned();
@@ -110,21 +105,15 @@ mod routes {
         let resp: Value = read_body_json(resp).await;
         let resp_not_found = RESP_NOT_FOUND.to_owned();
         assert_eq!(resp, resp_not_found);
-        // // No send POST data
-        // let resp = TestRequest::patch()
-        //     .uri(&format!("/posts/{}", post.id))
-        //     .set_json({})
-        //     .send_request(&app)
-        //     .await;
-        // assert!(resp.status().is_client_error());
-        // let resp: Value = read_body_json(resp).await;
-        // assert_eq!(
-        //     resp,
-        //     json!({ "errors": [
-        //         { "code": 422, "title": "title is required"},
-        //         { "code": 422, "body": "body is required"},
-        //     ]})
-        // );
+        // No send POST data
+        let resp = TestRequest::patch()
+            .uri(&format!("/posts/{}", post.id))
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        let incorrect = RESP_INCORRECT.to_owned();
+        assert_eq!(resp, incorrect);
         // Empty POST data
         let request_body = INVALID_JSON.to_owned();
         let resp = TestRequest::patch()
@@ -227,6 +216,9 @@ mod routes {
             { "code": 422, "message": "title is too long"},
         ]})
     });
+
+    static RESP_INCORRECT: Lazy<Value> =
+        Lazy::new(|| json!({ "code": 400, "message": "Post Request is Incorrect" }));
 
     fn create_post() -> Post {
         let post = PostParams {
