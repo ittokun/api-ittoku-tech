@@ -6,8 +6,9 @@ use actix_web::{App, HttpServer};
 use std::env;
 
 mod api_error;
-mod posts;
+mod config;
 mod db;
+mod posts;
 mod schema;
 
 #[actix_web::main]
@@ -20,6 +21,7 @@ async fn main() -> std::io::Result<()> {
     let app = || {
         App::new()
             .wrap(Logger::default())
+            .configure(config::init)
             .configure(posts::init_routes)
     };
 
