@@ -6,6 +6,7 @@ use actix_web::{App, HttpServer};
 use std::env;
 
 mod api_error;
+mod comments;
 mod config;
 mod db;
 mod posts;
@@ -23,6 +24,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .configure(config::init)
             .configure(posts::init_routes)
+            .configure(comments::init_routes)
     };
 
     info!("Starting Server: http://{host}:{port}");
