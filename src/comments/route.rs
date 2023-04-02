@@ -1,6 +1,8 @@
 use crate::api_error::ApiError;
+use crate::comments::*;
 use actix_web::{delete, get, post, web, HttpRequest, HttpResponse, Result};
 use serde_json::json;
+use serde_json::to_string_pretty;
 use uuid::Uuid;
 
 use chrono::prelude::*;
@@ -8,18 +10,10 @@ use chrono::prelude::*;
 #[get("/posts/{post_id}/comments")]
 async fn find_all(req: HttpRequest) -> Result<HttpResponse, ApiError> {
     let post_id: Uuid = find_query_id(&req, "post_id");
-    Ok(HttpResponse::Ok().json(json!({
-        "total_count": 1,
-        "comments": [
-        {
-            "id": Uuid::new_v4(),
-            "body": "Find All Comments",
-            "post_id": post_id,
-            "created_at": Some(Utc::now().naive_utc()),
-            "updated_at": Some(Utc::now().naive_utc()),
-        }
-    ]
-    })))
+    let comments = Comment::find_all(post_id).await?;
+    let comments = CommentFindAll::new(comments.len(), comments);
+    let comments = to_string_pretty(&comments).unwrap();
+    Ok(HttpResponse::Ok().body(comments))
 }
 
 #[post("/posts/{post_id}/comments/{comment_id}")]

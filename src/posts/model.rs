@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
-#[derive(Debug, PartialEq, Deserialize, Serialize, Queryable, Insertable)]
+#[derive(Debug, PartialEq, Deserialize, Serialize, Queryable, Identifiable, Insertable)]
 #[diesel(table_name = posts)]
 pub struct Post {
     pub id: Uuid,
@@ -17,7 +17,7 @@ pub struct Post {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(Debug, Deserialize, Serialize, Validate, AsChangeset)]
+#[derive(Debug, Deserialize, Validate, AsChangeset)]
 #[diesel(table_name = posts)]
 pub struct PostParams {
     #[validate(custom = "validate_title")]
@@ -102,7 +102,7 @@ impl PostFindAll {
     }
 }
 
-fn validate_title(title: &str) ->Result<(), ValidationError> {
+fn validate_title(title: &str) -> Result<(), ValidationError> {
     if title.is_empty() {
         return Err(ValidationError::new("title is required"));
     } else if title.len() > 256 {
@@ -112,7 +112,7 @@ fn validate_title(title: &str) ->Result<(), ValidationError> {
     Ok(())
 }
 
-fn validate_body(body: &str) ->Result<(), ValidationError> {
+fn validate_body(body: &str) -> Result<(), ValidationError> {
     if body.is_empty() {
         return Err(ValidationError::new("body is required"));
     } else if body.len() > 65536 {
