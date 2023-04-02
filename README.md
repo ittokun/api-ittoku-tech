@@ -2,32 +2,45 @@
 
 このリポジトリは、ittoku-tech.comのAPIサーバーです。*.ittoku-tech.comからのレスポンスに対応します。
 
-### サイト紹介
+## アプリを動かす
 
-* 記事投稿（作成、編集、削除）
-* 検索機能（記事）
+以下のコマンドを実行することでアプリの構築ができます。
 
-### 環境構築
+```bash
+docker-compose build
+docker-compose up
+```
 
-下記のURLにアクセスし、そちらの手順にしたがって環境構築を行います。
+以下のコマンドを実行して、動作を確認してみましょう。
 
-https://github.com/ittokun/ittoku-tech
+```bash
+curl http://0.0.0.0:8080
+```
 
-### アプリ詳細
+アプリを終了するときは以下のコマンドを実行します。
 
-* Ruby version
-  * 3.1.2
-* System dependencies
-  * postgresql
-* Configuration
-  * ?
-* Database creation
-  * rails db:setup
-* Database initialization
-  * rails db:setup
-* How to run the test suite
-  * rails test
-* Services (job queues, cache servers, search engines, etc.)
-  * not yet
-* Deployment instructions
-  * flyctl deploy
+```bash
+docker-compose down
+```
+
+**データベース**
+
+PostgreSQLにアクセスするには以下のコマンドを実行します。
+
+```bash
+make db-access
+```
+
+**rust**
+
+rustにアクセスするには以下のコマンドを実行します。
+
+```bash
+make api-bash
+```
+
+テストを実行するには以下のコマンドを実行します。
+
+```bash
+make api-test
+```
