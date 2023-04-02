@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
-#[derive(Serialize, Deserialize, Queryable, Selectable, Identifiable, Associations)]
+#[derive(Serialize, Deserialize, Queryable, Selectable, Identifiable, Associations, Insertable)]
 #[diesel(belongs_to(Post))]
 #[diesel(table_name = comments)]
 pub struct Comment {
@@ -35,6 +35,25 @@ impl Comment {
             .select(Comment::as_select())
             .load(conn)?;
         Ok(comments)
+    }
+
+    pub async fn create(post_id: Uuid, comment: CommentParams) -> Result<Self, ApiError> {
+        let conn = &mut db::connection()?;
+        let comment = Comment::from_belong_post(post_id, comment);
+        let comment = diesel::insert_into(comments::table)
+            .values(comment)
+            .get_result(conn)?;
+        Ok(comment)
+    }
+
+    fn from_belong_post(post_id: Uuid, comment: CommentParams) -> Self {
+        Comment {
+            id: Uuid::new_v4(),
+            body: comment.body,
+            post_id,
+            created_at: Utc::now().naive_utc(),
+            updated_at: Utc::now().naive_utc(),
+        }
     }
 }
 

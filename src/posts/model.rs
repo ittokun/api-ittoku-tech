@@ -1,6 +1,6 @@
 use crate::api_error::ApiError;
 use crate::db;
-use crate::schema::posts;
+use crate::schema::{posts, comments};
 use chrono::prelude::*;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -61,10 +61,15 @@ impl Post {
 
     pub fn delete(id: Uuid) -> Result<Self, ApiError> {
         let conn = &mut db::connection()?;
-        let post = diesel::delete(posts::table)
-            .filter(posts::id.eq(id))
-            .get_result(conn)?;
-        Ok(post)
+        conn.transaction::<Self, ApiError, _>(|conn| {
+            diesel::delete(comments::table)
+                .filter(comments::post_id.eq(id))
+                .execute(conn)?;
+            let post = diesel::delete(posts::table)
+                .filter(posts::id.eq(id))
+                .get_result(conn)?;
+            Ok(post)
+        })
     }
 }
 
