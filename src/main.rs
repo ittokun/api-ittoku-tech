@@ -11,6 +11,8 @@ mod config;
 mod db;
 mod posts;
 mod schema;
+#[cfg(test)]
+mod test;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
