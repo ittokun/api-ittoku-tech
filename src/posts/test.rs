@@ -55,7 +55,7 @@ mod routes {
         let incorrect = RESP_INCORRECT.to_owned();
         assert_eq!(resp, incorrect);
         // Empty POST data
-        let request_body = INVALID_JSON.to_owned();
+        let request_body = POST_INVALID_PARAMS.to_owned();
         let resp = TestRequest::post()
             .uri("/posts")
             .set_json(&request_body)
@@ -63,10 +63,10 @@ mod routes {
             .await;
         assert!(resp.status().is_client_error());
         let resp: Value = read_body_json(resp).await;
-        let required = RESP_REQUIRED.to_owned();
+        let required = POST_RESP_REQUIRED.to_owned();
         assert_eq!(resp, required);
         // Too long POST data
-        let request_body = INVALID_JSON_2.to_owned();
+        let request_body = POST_INVALID_PARAMS_2.to_owned();
         let resp = TestRequest::post()
             .uri("/posts")
             .set_json(&request_body)
@@ -74,10 +74,10 @@ mod routes {
             .await;
         assert!(resp.status().is_client_error());
         let resp: Value = read_body_json(resp).await;
-        let too_long = RESP_TOOLONG.to_owned();
+        let too_long = POST_RESP_TOOLONG.to_owned();
         assert_eq!(resp, too_long);
         // success test
-        let request_body = VALID_JSON.to_owned();
+        let request_body = POST_VALID_PARAMS.to_owned();
         let resp = TestRequest::post()
             .uri("/posts")
             .set_json(&request_body)
@@ -95,7 +95,7 @@ mod routes {
         let app = init_service(App::new().configure(config::init).configure(init_routes)).await;
         let post = create_post();
         // Post not found
-        let request_body = VALID_JSON.to_owned();
+        let request_body = POST_VALID_PARAMS.to_owned();
         let resp = TestRequest::patch()
             .uri("/posts/asdf")
             .set_json(&request_body)
@@ -115,7 +115,7 @@ mod routes {
         let incorrect = RESP_INCORRECT.to_owned();
         assert_eq!(resp, incorrect);
         // Empty POST data
-        let request_body = INVALID_JSON.to_owned();
+        let request_body = POST_INVALID_PARAMS.to_owned();
         let resp = TestRequest::patch()
             .uri(&format!("/posts/{}", post.id))
             .set_json(&request_body)
@@ -123,10 +123,10 @@ mod routes {
             .await;
         assert!(resp.status().is_client_error());
         let resp: Value = read_body_json(resp).await;
-        let required = RESP_REQUIRED.to_owned();
+        let required = POST_RESP_REQUIRED.to_owned();
         assert_eq!(resp, required);
         // Too long POST data
-        let request_body = INVALID_JSON_2.to_owned();
+        let request_body = POST_INVALID_PARAMS_2.to_owned();
         let resp = TestRequest::patch()
             .uri(&format!("/posts/{}", post.id))
             .set_json(&request_body)
@@ -134,10 +134,10 @@ mod routes {
             .await;
         assert!(resp.status().is_client_error());
         let resp: Value = read_body_json(resp).await;
-        let too_long = RESP_TOOLONG.to_owned();
+        let too_long = POST_RESP_TOOLONG.to_owned();
         assert_eq!(resp, too_long);
         // success test
-        let request_body = VALID_JSON.to_owned();
+        let request_body = POST_VALID_PARAMS.to_owned();
         let resp = TestRequest::patch()
             .uri(&format!("/posts/{}", post.id))
             .set_json(&request_body)
