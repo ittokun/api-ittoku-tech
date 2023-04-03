@@ -1,13 +1,13 @@
 use crate::api_error::ApiError;
 use crate::db;
-use crate::schema::posts;
+use crate::schema::{posts, comments};
 use chrono::prelude::*;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
-#[derive(Debug, PartialEq, Deserialize, Serialize, Queryable, Insertable)]
+#[derive(Debug, PartialEq, Deserialize, Serialize, Queryable, Identifiable, Insertable)]
 #[diesel(table_name = posts)]
 pub struct Post {
     pub id: Uuid,
@@ -17,7 +17,7 @@ pub struct Post {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(Debug, Deserialize, Serialize, Validate, AsChangeset)]
+#[derive(Debug, Deserialize, Validate, AsChangeset)]
 #[diesel(table_name = posts)]
 pub struct PostParams {
     #[validate(custom = "validate_title")]
@@ -61,10 +61,15 @@ impl Post {
 
     pub fn delete(id: Uuid) -> Result<Self, ApiError> {
         let conn = &mut db::connection()?;
-        let post = diesel::delete(posts::table)
-            .filter(posts::id.eq(id))
-            .get_result(conn)?;
-        Ok(post)
+        conn.transaction::<Self, ApiError, _>(|conn| {
+            diesel::delete(comments::table)
+                .filter(comments::post_id.eq(id))
+                .execute(conn)?;
+            let post = diesel::delete(posts::table)
+                .filter(posts::id.eq(id))
+                .get_result(conn)?;
+            Ok(post)
+        })
     }
 }
 
@@ -102,7 +107,7 @@ impl PostFindAll {
     }
 }
 
-fn validate_title(title: &str) ->Result<(), ValidationError> {
+fn validate_title(title: &str) -> Result<(), ValidationError> {
     if title.is_empty() {
         return Err(ValidationError::new("title is required"));
     } else if title.len() > 256 {
@@ -112,7 +117,7 @@ fn validate_title(title: &str) ->Result<(), ValidationError> {
     Ok(())
 }
 
-fn validate_body(body: &str) ->Result<(), ValidationError> {
+fn validate_body(body: &str) -> Result<(), ValidationError> {
     if body.is_empty() {
         return Err(ValidationError::new("body is required"));
     } else if body.len() > 65536 {
