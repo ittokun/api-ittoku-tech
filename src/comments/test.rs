@@ -88,6 +88,41 @@ mod routes {
         delete_post(post)
     }
 
+    #[actix_web::test]
+    async fn delete() {
+        let app = init_service(App::new().configure(config::init).configure(init_routes)).await;
+        // Post not found
+        let resp = TestRequest::delete()
+            .uri("/posts/asdf/comments/asdf")
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        let json_resp = RESP_NOT_FOUND.to_owned();
+        assert_eq!(resp, json_resp);
+        // Comment not found
+        let comment = create_comment();
+        let resp = TestRequest::delete()
+            .uri(&format!("/posts/{}/comments/asdf", comment.post_id))
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_client_error());
+        let resp: Value = read_body_json(resp).await;
+        let json_resp = RESP_NOT_FOUND.to_owned();
+        assert_eq!(resp, json_resp);
+        // Success test
+        let resp = TestRequest::delete()
+            .uri(&format!(
+                "/posts/{}/comments/{}",
+                comment.post_id, comment.id
+            ))
+            .send_request(&app)
+            .await;
+        assert!(resp.status().is_success());
+        let resp: Comment = read_body_json(resp).await;
+        assert_eq!(resp, comment);
+    }
+
     static VALID_JSON: Lazy<Value> = Lazy::new(|| json!({ "body": "Test Comment", }));
 
     static INVALID_JSON: Lazy<Value> = Lazy::new(|| json!({ "body": "", }));
@@ -125,15 +160,14 @@ mod routes {
         Post::delete(post.id).expect("Failed delete_post(id)");
     }
 
-    // async fn create_comment(post: Post) -> Comment {
-    //     let comment = CommentParams {
-    //         body: "This is a create_comment()".to_string(),
-    //         updated_at: None,
-    //     };
-    //     Comment::create(post.id, comment)
-    //         .await
-    //         .expect("Failed create_comment()")
-    // }
+    fn create_comment() -> Comment {
+        let post = create_post();
+        let comment = CommentParams {
+            body: "This is a create_comment()".to_string(),
+            updated_at: None,
+        };
+        Comment::create(post.id, comment).expect("Failed create_comment()")
+    }
 
     // async fn delete_comment(comment: Comment) {
     //     Comment::delete(comment.id).expect("Failed delete_comment(comment)")

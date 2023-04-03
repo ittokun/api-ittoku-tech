@@ -8,7 +8,17 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
-#[derive(Serialize, Deserialize, Queryable, Selectable, Identifiable, Associations, Insertable)]
+#[derive(
+    Debug,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    Queryable,
+    Selectable,
+    Identifiable,
+    Associations,
+    Insertable,
+)]
 #[diesel(belongs_to(Post))]
 #[diesel(table_name = comments)]
 pub struct Comment {
@@ -28,7 +38,7 @@ pub struct CommentParams {
 }
 
 impl Comment {
-    pub async fn find_all(post_id: Uuid) -> Result<Vec<Self>, ApiError> {
+    pub fn find_all(post_id: Uuid) -> Result<Vec<Self>, ApiError> {
         let conn = &mut db::connection()?;
         let post = Post::find(post_id)?;
         let comments = Comment::belonging_to(&post)
@@ -37,11 +47,20 @@ impl Comment {
         Ok(comments)
     }
 
-    pub async fn create(post_id: Uuid, comment: CommentParams) -> Result<Self, ApiError> {
+    pub fn create(post_id: Uuid, comment: CommentParams) -> Result<Self, ApiError> {
         let conn = &mut db::connection()?;
         let comment = Comment::from_belong_post(post_id, comment);
         let comment = diesel::insert_into(comments::table)
             .values(comment)
+            .get_result(conn)?;
+        Ok(comment)
+    }
+
+    pub fn delete(post_id: Uuid, comment_id: Uuid) -> Result<Self, ApiError> {
+        let conn = &mut db::connection()?;
+        let comment = diesel::delete(comments::table)
+            .filter(comments::post_id.eq(post_id))
+            .filter(comments::id.eq(comment_id))
             .get_result(conn)?;
         Ok(comment)
     }
