@@ -13,6 +13,7 @@ mod posts;
 mod schema;
 #[cfg(test)]
 mod test;
+mod users;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -27,6 +28,7 @@ async fn main() -> std::io::Result<()> {
             .configure(config::init)
             .configure(posts::init_routes)
             .configure(comments::init_routes)
+            .configure(users::init_routes)
     };
 
     info!("Starting Server: http://{host}:{port}");
