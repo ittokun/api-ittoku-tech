@@ -24,6 +24,7 @@ async fn main() -> std::io::Result<()> {
     let app = || {
         App::new()
             .wrap(Logger::default())
+            .service(ittoku_api::index)
             .configure(config::init)
             .configure(posts::init_routes)
             .configure(comments::init_routes)
