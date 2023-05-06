@@ -13,6 +13,12 @@ pub struct Model {
     pub updated_at: DateTime,
 }
 
+#[derive(DeriveIntoActiveModel)]
+pub struct NewModel {
+    pub title: String,
+    pub text: String,
+}
+
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 
