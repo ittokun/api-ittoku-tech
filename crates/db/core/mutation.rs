@@ -1,6 +1,8 @@
-use ::entity::{prelude::*, *};
+use ::entity::sea_orm::{
+    ActiveModelTrait, DatabaseConnection, DbErr, DeleteResult, EntityTrait, Set,
+};
+use ::entity::{post, prelude::*};
 
-use sea_orm::*;
 use chrono::Utc;
 
 pub struct Mutation;

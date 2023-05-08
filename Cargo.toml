@@ -1,20 +1,20 @@
 [package]
-name = "ittoku_api"
+name = "api-ittoku-tech"
 version = "0.1.0"
 edition = "2021"
 
 [[bin]]
 bench = false
 path = "crates/api/main.rs"
-name = "ittoku_api"
+name = "api-ittoku-tech"
 
 [workspace]
-members = [
-    "crates/db",
-]
+members = ["crates/db"]
 
 [dependencies]
-# api = { path = "api" }
+db = { path = "crates/db" }
+
+futures = "0.3.28"
 
 # actix-web = "4.3.1"
 # chrono = { version = "0.4.24", features = ["serde"] }

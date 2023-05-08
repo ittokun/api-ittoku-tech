@@ -1,6 +1,6 @@
-use ::entity::{prelude::*, *};
+use ::entity::{post, prelude::*};
 
-use sea_orm::*;
+use ::entity::sea_orm::{DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, QueryOrder};
 
 pub struct Query;
 
