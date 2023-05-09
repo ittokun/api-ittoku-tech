@@ -4,6 +4,8 @@ use serde_json::to_string_pretty;
 
 use std::env;
 
+mod posts;
+
 #[derive(Serialize)]
 struct Urls {
     post_detail_url: String,
@@ -24,4 +26,6 @@ async fn index() -> HttpResponse {
 
 pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(index);
+
+    cfg.configure(posts::init_routes);
 }
