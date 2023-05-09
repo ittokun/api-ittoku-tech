@@ -1,4 +1,4 @@
-pub use sea_orm_migration::prelude::*;
+use sea_orm_migration::prelude::*;
 
 mod m20230501_000001_create_post_table;
 mod m20230501_000002_create_comment_table;
@@ -14,3 +14,5 @@ impl MigratorTrait for Migrator {
         ]
     }
 }
+
+pub use sea_orm_migration;

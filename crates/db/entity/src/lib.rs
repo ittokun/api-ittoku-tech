@@ -4,3 +4,5 @@ pub mod prelude;
 
 pub mod comment;
 pub mod post;
+
+pub use sea_orm;
