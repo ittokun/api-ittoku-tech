@@ -1,4 +1,4 @@
-use ::entity::{post, prelude::*};
+use ::entity::{post, prelude::Post};
 
 use ::entity::sea_orm::{DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, QueryOrder};
 

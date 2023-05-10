@@ -2,7 +2,7 @@
 extern crate log;
 
 use db::{get_db_connection, migrate};
-use db::sea_orm::DatabaseConnection;
+use db::entity::sea_orm::DatabaseConnection;
 
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
@@ -13,7 +13,7 @@ mod routes;
 
 #[derive(Debug, Clone)]
 pub struct AppState {
-    db: DatabaseConnection,
+    _db: DatabaseConnection,
 }
 
 #[actix_web::main]
@@ -27,8 +27,8 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
     migrate().await.expect("Failed to migrate");
 
-    let db = get_db_connection().await.unwrap();
-    let state = AppState { db };
+    let _db = get_db_connection().await.unwrap();
+    let state = AppState { _db };
     let app = move || {
         App::new()
             .app_data(web::Data::new(state.clone()))

@@ -1,5 +1,6 @@
+use ::db::entity::serde::{self, Serialize};
+
 use actix_web::{get, web, HttpResponse};
-use serde::Serialize;
 use serde_json::to_string_pretty;
 
 use std::env;
@@ -7,6 +8,7 @@ use std::env;
 mod posts;
 
 #[derive(Serialize)]
+#[serde(crate = "self::serde")]
 struct Urls {
     post_detail_url: String,
     post_list_url: String,

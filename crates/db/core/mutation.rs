@@ -1,7 +1,8 @@
+use ::entity::{post, prelude::Post};
+
 use ::entity::sea_orm::{
     ActiveModelTrait, DatabaseConnection, DbErr, DeleteResult, EntityTrait, Set,
 };
-use ::entity::{post, prelude::*};
 
 use chrono::Utc;
 

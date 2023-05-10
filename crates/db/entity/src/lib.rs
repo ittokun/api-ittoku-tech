@@ -6,3 +6,4 @@ pub mod comment;
 pub mod post;
 
 pub use sea_orm;
+pub use serde;
