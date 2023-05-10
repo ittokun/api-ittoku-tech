@@ -13,7 +13,7 @@ mod routes;
 
 #[derive(Debug, Clone)]
 pub struct AppState {
-    _db: DatabaseConnection,
+    conn: DatabaseConnection,
 }
 
 #[actix_web::main]
@@ -27,8 +27,9 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
     migrate().await.expect("Failed to migrate");
 
-    let _db = get_db_connection().await.unwrap();
-    let state = AppState { _db };
+    let conn = get_db_connection().await.unwrap();
+    let state = AppState { conn };
+
     let app = move || {
         App::new()
             .app_data(web::Data::new(state.clone()))

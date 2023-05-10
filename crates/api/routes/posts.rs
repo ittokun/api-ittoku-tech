@@ -1,95 +1,65 @@
-use ::db::entity::post::Model as Post;
-// use ::db::entity::post::NewModel as NewPost;
-use ::db::entity::serde::{self, Serialize};
-use ::db::chrono::Utc;
+use ::db::entity::post::NewModel as NewPost;
+use ::db::{Mutation, Query};
 
-use actix_web::{delete, get, patch, post, web, HttpResponse};
+use crate::AppState;
+
+use actix_web::{delete, get, patch, post, web, HttpRequest, HttpResponse};
 use serde_json::to_string_pretty;
 
-#[derive(Serialize)]
-#[serde(crate = "self::serde")]
-struct PostList {
-    total_count: i32,
-    posts: Vec<Post>,
-}
-
 #[get("/posts")]
-async fn list() -> HttpResponse {
-    let posts = PostList {
-        total_count: 2,
-        posts: vec![
-            Post {
-                id: 1,
-                title: "Hello, world!".to_string(),
-                text: "This is my first post.".to_string(),
-                created_at: Utc::now().naive_utc(),
-                updated_at: Utc::now().naive_utc(),
-            },
-            Post {
-                id: 2,
-                title: "Hello again!".to_string(),
-                text: "This is my second post.".to_string(),
-                created_at: Utc::now().naive_utc(),
-                updated_at: Utc::now().naive_utc(),
-            },
-        ],
-    };
+async fn list(data: web::Data<AppState>) -> HttpResponse {
+    let conn = &data.conn;
+
+    let posts = Query::find_posts_in_page(conn, 1, 10).await.unwrap();
     let posts = to_string_pretty(&posts).unwrap();
 
     HttpResponse::Ok().body(posts)
 }
 
 #[post("/posts")]
-async fn create() -> HttpResponse {
-    let post = Post {
-        id: 1,
-        title: "created post".to_string(),
-        text: "This is my first post.".to_string(),
-        created_at: Utc::now().naive_utc(),
-        updated_at: Utc::now().naive_utc(),
-    };
+async fn create(data: web::Data<AppState>, post_form: web::Json<NewPost>) -> HttpResponse {
+    let conn = &data.conn;
+    let form = post_form.into_inner();
+
+    let post = Mutation::create_post(conn, form).await.unwrap();
     let post = to_string_pretty(&post).unwrap();
 
     HttpResponse::Created().body(post)
 }
 
 #[get("/posts/{id}")]
-async fn detail() -> HttpResponse {
-    let post = Post {
-        id: 1,
-        title: "detail post".to_string(),
-        text: "This is my first post.".to_string(),
-        created_at: Utc::now().naive_utc(),
-        updated_at: Utc::now().naive_utc(),
-    };
+async fn detail(data: web::Data<AppState>, req: HttpRequest) -> HttpResponse {
+    let conn = &data.conn;
+    let id: i32 = req.match_info().query("id").parse().unwrap_or_default();
+
+    let post = Query::find_post_by_id(conn, id).await.unwrap();
     let post = to_string_pretty(&post).unwrap();
 
     HttpResponse::Ok().body(post)
 }
 
 #[patch("/posts/{id}")]
-async fn update() -> HttpResponse {
-    let post = Post {
-        id: 1,
-        title: "updated post".to_string(),
-        text: "This is my first post.".to_string(),
-        created_at: Utc::now().naive_utc(),
-        updated_at: Utc::now().naive_utc(),
-    };
+async fn update(
+    data: web::Data<AppState>,
+    req: HttpRequest,
+    post_form: web::Json<NewPost>,
+) -> HttpResponse {
+    let conn = &data.conn;
+    let id: i32 = req.match_info().query("id").parse().unwrap_or_default();
+    let form = post_form.into_inner();
+
+    let post = Mutation::update_post_by_id(conn, id, form).await.unwrap();
     let post = to_string_pretty(&post).unwrap();
 
     HttpResponse::Ok().body(post)
 }
 
 #[delete("/posts/{id}")]
-async fn delete() -> HttpResponse {
-    let post = Post {
-        id: 1,
-        title: "deleted post".to_string(),
-        text: "This is my first post.".to_string(),
-        created_at: Utc::now().naive_utc(),
-        updated_at: Utc::now().naive_utc(),
-    };
+async fn delete(data: web::Data<AppState>, req: HttpRequest) -> HttpResponse {
+    let conn = &data.conn;
+    let id: i32 = req.match_info().query("id").parse().unwrap_or_default();
+
+    let post = Mutation::delete_post_by_id(conn, id).await.unwrap();
     let post = to_string_pretty(&post).unwrap();
 
     HttpResponse::Ok().body(post)

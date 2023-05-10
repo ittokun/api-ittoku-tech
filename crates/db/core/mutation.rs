@@ -4,6 +4,8 @@ use ::entity::sea_orm::{
     ActiveModelTrait, DatabaseConnection, DbErr, DeleteResult, EntityTrait, Set,
 };
 
+use crate::Query;
+
 use chrono::Utc;
 
 pub struct Mutation;
@@ -12,13 +14,13 @@ impl Mutation {
     pub async fn create_post(
         db: &DatabaseConnection,
         form_data: post::NewModel,
-    ) -> Result<post::ActiveModel, DbErr> {
+    ) -> Result<post::Model, DbErr> {
         post::ActiveModel {
             title: Set(form_data.title),
             text: Set(form_data.text),
             ..Default::default()
         }
-        .save(db)
+        .insert(db)
         .await
     }
 
@@ -44,17 +46,11 @@ impl Mutation {
         .await
     }
 
-    pub async fn delete_post_by_id(
-        db: &DatabaseConnection,
-        id: i32,
-    ) -> Result<DeleteResult, DbErr> {
-        let post: post::ActiveModel = Post::find_by_id(id)
-            .one(db)
-            .await?
-            .ok_or(DbErr::Custom("Cannot Find Post".to_owned()))
-            .map(Into::into)?;
+    pub async fn delete_post_by_id(db: &DatabaseConnection, id: i32) -> Result<post::Model, DbErr> {
+        let post = Query::find_post_by_id(db, id).await?.unwrap();
+        Post::delete_by_id(post.id).exec(db).await?;
 
-        post.delete(db).await
+        Ok(post)
     }
 
     pub async fn delete_all_posts(db: &DatabaseConnection) -> Result<DeleteResult, DbErr> {

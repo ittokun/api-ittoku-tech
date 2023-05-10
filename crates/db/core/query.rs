@@ -16,12 +16,18 @@ impl Query {
         db: &DatabaseConnection,
         page: u64,
         posts_per_page: u64,
-    ) -> Result<(Vec<post::Model>, u64), DbErr> {
+    ) -> Result<post::ListModel, DbErr> {
         let paginator = Post::find()
             .order_by_asc(post::Column::Id)
             .paginate(db, posts_per_page);
-        let num_pages = paginator.num_pages().await?;
+        let total_count = paginator.num_pages().await?;
 
-        paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
+        paginator
+            .fetch_page(page - 1)
+            .await
+            .map(|posts| post::ListModel {
+                total_count,
+                posts,
+            })
     }
 }

@@ -20,6 +20,12 @@ pub struct NewModel {
     pub text: String,
 }
 
+#[derive(Serialize)]
+pub struct ListModel {
+    pub total_count: u64,
+    pub posts: Vec<Model>,
+}
+
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 
