@@ -1,18 +1,17 @@
-use ::entity::sea_orm::{Database, DatabaseConnection, DbErr};
-use ::migration::sea_orm_migration::MigratorTrait;
-use ::migration::Migrator;
+use sea_orm::{Database, DatabaseConnection, DbErr};
+use sea_orm_migration::MigratorTrait;
 
 use std::env;
 
-mod mutation;
-mod query;
+mod crud;
+mod entities;
+mod migrator;
 
-pub use crate::mutation::Mutation;
-pub use crate::query::Query;
+use migrator::Migrator;
 
-pub use chrono;
-
-pub use ::entity;
+pub use crud::mutation::Mutation;
+pub use crud::query::Query;
+pub use entities::post;
 
 pub async fn get_db_connection() -> Result<DatabaseConnection, DbErr> {
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL not set");

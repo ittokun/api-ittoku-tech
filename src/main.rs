@@ -1,19 +1,20 @@
 #[macro_use]
 extern crate log;
 
-// use db::{get_db_connection, migrate};
-// use sea_orm::DatabaseConnection;
-
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
+use sea_orm::DatabaseConnection;
 
 use std::env;
 
 mod routes;
+mod db;
+
+use db::{get_db_connection, migrate};
 
 #[derive(Debug, Clone)]
 pub struct AppState {
-    // conn: DatabaseConnection,
+    conn: DatabaseConnection,
 }
 
 #[actix_web::main]
@@ -25,14 +26,14 @@ async fn main() -> std::io::Result<()> {
     let server_url = format!("{}:{}", host, port);
 
     env_logger::init();
-    // migrate().await.expect("Failed to migrate");
+    migrate().await.expect("Failed to migrate");
 
-    // let conn = get_db_connection().await.unwrap();
-    // let state = AppState { conn };
+    let conn = get_db_connection().await.unwrap();
+    let state = AppState { conn };
 
     let app = move || {
         App::new()
-            // .app_data(web::Data::new(state.clone()))
+            .app_data(web::Data::new(state.clone()))
             .wrap(Logger::default())
             .configure(routes::init)
     };

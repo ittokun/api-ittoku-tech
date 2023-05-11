@@ -1,6 +1,6 @@
-use ::entity::{post, prelude::Post};
+use sea_orm::{DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, QueryOrder};
 
-use ::entity::sea_orm::{DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, QueryOrder};
+use crate::db::entities::{post, prelude::Post};
 
 pub struct Query;
 
@@ -25,9 +25,6 @@ impl Query {
         paginator
             .fetch_page(page - 1)
             .await
-            .map(|posts| post::ListModel {
-                total_count,
-                posts,
-            })
+            .map(|posts| post::ListModel { total_count, posts })
     }
 }

@@ -1,12 +1,8 @@
-use ::entity::{post, prelude::Post};
-
-use ::entity::sea_orm::{
-    ActiveModelTrait, DatabaseConnection, DbErr, DeleteResult, EntityTrait, Set,
-};
-
-use crate::Query;
-
 use chrono::Utc;
+use sea_orm::{ActiveModelTrait, DatabaseConnection, DbErr, EntityTrait, Set};
+
+use crate::db::crud::query::Query;
+use crate::db::entities::{post, prelude::Post};
 
 pub struct Mutation;
 
@@ -53,7 +49,7 @@ impl Mutation {
         Ok(post)
     }
 
-    pub async fn delete_all_posts(db: &DatabaseConnection) -> Result<DeleteResult, DbErr> {
-        Post::delete_many().exec(db).await
-    }
+    // pub async fn delete_all_posts(db: &DatabaseConnection) -> Result<DeleteResult, DbErr> {
+    //     Post::delete_many().exec(db).await
+    // }
 }
