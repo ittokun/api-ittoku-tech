@@ -3,6 +3,8 @@ use sea_orm_migration::prelude::*;
 mod m20230501_000001_create_post_table;
 mod m20230501_000002_create_comment_table;
 
+pub use sea_orm_migration;
+
 pub struct Migrator;
 
 #[async_trait::async_trait]
@@ -14,5 +16,3 @@ impl MigratorTrait for Migrator {
         ]
     }
 }
-
-pub use sea_orm_migration;
