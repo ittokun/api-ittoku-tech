@@ -1,11 +1,11 @@
-use ::db::entity::serde::{self, Serialize};
+use serde::{self, Serialize};
 
 use actix_web::{get, web, HttpResponse};
 use serde_json::to_string_pretty;
 
 use std::env;
 
-mod posts;
+// mod posts;
 
 #[derive(Serialize)]
 #[serde(crate = "self::serde")]
@@ -29,5 +29,5 @@ async fn index() -> HttpResponse {
 pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(index);
 
-    cfg.configure(posts::init_routes);
+    // cfg.configure(posts::init_routes);
 }
