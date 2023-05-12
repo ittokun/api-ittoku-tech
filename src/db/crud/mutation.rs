@@ -43,7 +43,7 @@ impl Mutation {
     }
 
     pub async fn delete_post_by_id(db: &DatabaseConnection, id: i32) -> Result<post::Model, DbErr> {
-        let post = Query::find_post_by_id(db, id).await?.unwrap();
+        let post = Query::find_post_by_id(db, id).await?;
         Post::delete_by_id(post.id).exec(db).await?;
 
         Ok(post)
