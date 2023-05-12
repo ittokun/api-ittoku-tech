@@ -7,6 +7,7 @@ use serde_json::to_string_pretty;
 #[derive(Debug, Display)]
 pub enum CustomError {
     NotFound,
+    SerializeError(String),
     InternalError(String),
 }
 
@@ -36,6 +37,7 @@ impl ResponseError for CustomError {
     fn status_code(&self) -> StatusCode {
         match self {
             CustomError::NotFound => StatusCode::NOT_FOUND,
+            CustomError::SerializeError(_) => StatusCode::BAD_REQUEST,
             CustomError::InternalError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
@@ -46,6 +48,9 @@ impl ResponseError for CustomError {
         match self {
             CustomError::NotFound => {
                 let message = "Not Found";
+                HttpResponse::build(status).body(ErrorResponse::new(status.as_u16(), &message))
+            }
+            CustomError::SerializeError(message) => {
                 HttpResponse::build(status).body(ErrorResponse::new(status.as_u16(), &message))
             }
             CustomError::InternalError(message) => {
