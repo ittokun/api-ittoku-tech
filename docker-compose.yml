@@ -20,7 +20,7 @@ services:
       - "8080:8080"
     depends_on:
       - db
-    command: cargo watch -x run -w crates
+    command: cargo watch -x run -w src
 
   db:
     image: "postgres:14"

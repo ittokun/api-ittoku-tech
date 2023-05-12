@@ -1,4 +1,4 @@
-use ::db::entity::serde::{self, Serialize};
+use serde::{self, Serialize};
 
 use actix_web::{get, web, HttpResponse};
 use serde_json::to_string_pretty;

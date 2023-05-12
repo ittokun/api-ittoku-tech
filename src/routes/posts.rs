@@ -1,5 +1,5 @@
-use ::db::entity::post::NewModel as NewPost;
-use ::db::{Mutation, Query};
+use crate::db::post::NewModel as NewPost;
+use crate::db::{Mutation, Query};
 
 use crate::AppState;
 

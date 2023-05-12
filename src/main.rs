@@ -1,38 +1,43 @@
-// #[macro_use]
-// extern crate log;
+#[macro_use]
+extern crate log;
 
-// use actix_web::middleware::Logger;
-// use actix_web::{App, HttpServer};
-// use std::env;
+use actix_web::middleware::Logger;
+use actix_web::{web, App, HttpServer};
+use sea_orm::DatabaseConnection;
 
-// mod api_error;
-// mod comments;
-// mod config;
-// mod db;
-// mod posts;
-// mod schema;
-// #[cfg(test)]
-// mod test;
+use std::env;
 
-fn main() {
-    api::main();
-    // env_logger::init();
-    // db::init();
+mod routes;
+mod db;
 
-    // let host = env::var("HOST").expect("Host not set");
-    // let port = env::var("PORT").expect("Port not set");
-    // let app = || {
-    //     App::new()
-    //         .wrap(Logger::default())
-    //         .service(ittoku_api::index)
-    //         .configure(config::init)
-    //         .configure(posts::init_routes)
-    //         .configure(comments::init_routes)
-    // };
+use db::{get_db_connection, migrate};
 
-    // info!("Starting Server: http://{host}:{port}");
-    // HttpServer::new(app)
-    //     .bind(format!("{host}:{port}"))?
-    //     .run()
-    //     .await
+#[derive(Debug, Clone)]
+pub struct AppState {
+    conn: DatabaseConnection,
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    // get env variables
+    let host = env::var("HOST").expect("HOST must be set");
+    let port = env::var("PORT").expect("PORT must be set");
+    let base_url = env::var("BASE_URL").expect("BASE_URL must be set");
+    let server_url = format!("{}:{}", host, port);
+
+    env_logger::init();
+    migrate().await.expect("Failed to migrate");
+
+    let conn = get_db_connection().await.unwrap();
+    let state = AppState { conn };
+
+    let app = move || {
+        App::new()
+            .app_data(web::Data::new(state.clone()))
+            .wrap(Logger::default())
+            .configure(routes::init)
+    };
+
+    info!("Starting server at: {}", base_url);
+    HttpServer::new(app).bind(server_url)?.run().await
 }

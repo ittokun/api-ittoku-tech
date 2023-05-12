@@ -1,23 +1,26 @@
-use crate::api_error::ApiError;
-use diesel::pg::PgConnection;
-use diesel::r2d2::ConnectionManager;
-use once_cell::sync::Lazy;
+use sea_orm::{Database, DatabaseConnection, DbErr};
+use sea_orm_migration::MigratorTrait;
+
 use std::env;
 
-type Pool = diesel::r2d2::Pool<ConnectionManager<PgConnection>>;
-type DbConnection = diesel::r2d2::PooledConnection<ConnectionManager<PgConnection>>;
+mod crud;
+mod entities;
+mod migrator;
 
-static POOL: Lazy<Pool> = Lazy::new(|| {
-    let database_url = env::var("DATABASE_URL").expect("Database URL not set");
-    let manager = ConnectionManager::<PgConnection>::new(database_url);
-    Pool::new(manager).expect("Failed to create db pool")
-});
+use migrator::Migrator;
 
-pub fn init() {
-    info!("Initializing DB");
+pub use crud::mutation::Mutation;
+pub use crud::query::Query;
+pub use entities::post;
+
+pub async fn get_db_connection() -> Result<DatabaseConnection, DbErr> {
+    let db_url = env::var("DATABASE_URL").expect("DATABASE_URL not set");
+    let db = Database::connect(db_url).await?;
+    Ok(db)
 }
 
-pub fn connection() -> Result<DbConnection, ApiError> {
-    POOL.get()
-        .map_err(|e| ApiError::InternalServerError(format!("Failed getting db connection: {}", e)))
+pub async fn migrate() -> Result<(), DbErr> {
+    let db = get_db_connection().await?;
+    Migrator::up(&db, None).await?;
+    Ok(())
 }
