@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 actix-web = "4.3.1"
 chrono = "0.4.24"
+derive_more = "0.99.17"
 env_logger = "0.10.0"
 log = "0.4.17"
 serde = "1.0.162"

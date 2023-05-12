@@ -7,6 +7,7 @@ use sea_orm::DatabaseConnection;
 
 use std::env;
 
+mod errors;
 mod routes;
 mod db;
 
