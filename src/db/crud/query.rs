@@ -5,11 +5,12 @@ use crate::db::entities::{post, prelude::Post};
 pub struct Query;
 
 impl Query {
-    pub async fn find_post_by_id(
-        db: &DatabaseConnection,
-        id: i32,
-    ) -> Result<Option<post::Model>, DbErr> {
-        Post::find_by_id(id).one(db).await
+    pub async fn find_post_by_id(db: &DatabaseConnection, id: i32) -> Result<post::Model, DbErr> {
+        let post = Post::find_by_id(id)
+            .one(db)
+            .await?
+            .ok_or(DbErr::RecordNotFound(String::from("")))?;
+        Ok(post)
     }
 
     pub async fn find_posts_in_page(

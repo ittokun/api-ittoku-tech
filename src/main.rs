@@ -7,10 +7,12 @@ use sea_orm::DatabaseConnection;
 
 use std::env;
 
-mod routes;
+mod config;
 mod db;
+mod errors;
+mod routes;
 
-use db::{get_db_connection, migrate};
+use db::{database_connection, migration};
 
 #[derive(Debug, Clone)]
 pub struct AppState {
@@ -25,16 +27,18 @@ async fn main() -> std::io::Result<()> {
     let base_url = env::var("BASE_URL").expect("BASE_URL must be set");
     let server_url = format!("{}:{}", host, port);
 
-    env_logger::init();
-    migrate().await.expect("Failed to migrate");
-
-    let conn = get_db_connection().await.unwrap();
+    // setup database
+    let conn = database_connection().await.unwrap();
+    migration(&conn).await.expect("Failed to migrate");
     let state = AppState { conn };
+
+    env_logger::init();
 
     let app = move || {
         App::new()
             .app_data(web::Data::new(state.clone()))
             .wrap(Logger::default())
+            .configure(config::init)
             .configure(routes::init)
     };
 
