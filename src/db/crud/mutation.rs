@@ -28,7 +28,7 @@ impl Mutation {
         let post: post::ActiveModel = Post::find_by_id(id)
             .one(db)
             .await?
-            .ok_or(DbErr::Custom("Cannot Find Post".to_owned()))
+            .ok_or(DbErr::RecordNotFound("Cannot Find Post".to_owned()))
             .map(Into::into)?;
 
         post::ActiveModel {
