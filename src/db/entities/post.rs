@@ -4,6 +4,8 @@ use sea_orm::entity::prelude::*;
 use sea_orm_migration::async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
+use super::prelude::Comment;
+
 use crate::errors::ErrorResponse;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
@@ -30,7 +32,16 @@ pub struct ListModel {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(has_many = "Comment")]
+    Comment,
+}
+
+impl Related<Comment> for Entity {
+    fn to() -> RelationDef {
+        Relation::Comment.def()
+    }
+}
 
 #[async_trait]
 impl ActiveModelBehavior for ActiveModel {
