@@ -1,5 +1,7 @@
 use sea_orm_migration::prelude::*;
 
+use super::m20230501_000001_create_post_table::Post;
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
@@ -19,6 +21,13 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Comment::Text).string().not_null())
+                    .col(ColumnDef::new(Comment::PostId).integer().not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                        .name("fk-comment-post_id")
+                            .from(Comment::Table, Comment::PostId)
+                            .to(Post::Table, Post::Id)
+                    )
                     .col(
                         ColumnDef::new(Comment::CreatedAt)
                             .timestamp()
@@ -45,10 +54,11 @@ impl MigrationTrait for Migration {
 
 /// Learn more at https://docs.rs/sea-query#iden
 #[derive(Iden)]
-enum Comment {
+pub enum Comment {
     Table,
     Id,
     Text,
+    PostId,
     CreatedAt,
     UpdatedAt,
 }
