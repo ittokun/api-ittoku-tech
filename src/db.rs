@@ -12,6 +12,7 @@ use migrator::Migrator;
 pub use crud::mutation::Mutation;
 pub use crud::query::Query;
 pub use entities::post;
+pub use entities::comment;
 
 pub async fn database_connection() -> Result<DatabaseConnection, DbErr> {
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL not set");
