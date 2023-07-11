@@ -1,46 +1,83 @@
-# api-ittoku-tech
+# example-rust-api
 
-このリポジトリは、ittoku-tech.comのAPIサーバーです。*.ittoku-tech.comからのレスポンスに対応します。
+このリポジトリには、Rust言語の`actix-web`と`seaorm`を組み合わせたAPIサーバーを構成するためのソースコードがあります。
 
-## アプリを動かす
+以下のコマンドを実行することで、動作を確認することができます。
 
-以下のコマンドを実行することでアプリの構築ができます。
+試してみましょう！
 
-```bash
-docker-compose build
-docker-compose up
-```
+### 動作要件
 
-以下のコマンドを実行して、動作を確認してみましょう。
+ここにあるソースコードを実行するためには`Docker`が必要になります。
 
-```bash
-curl http://0.0.0.0:8080
-```
+インストールしておきましょう。
 
-アプリを終了するときは以下のコマンドを実行します。
+### 動かす
+
+APIの立ち上げ
 
 ```bash
-docker-compose down
+make run
 ```
 
-**データベース**
+APIの終了
 
-PostgreSQLにアクセスするには以下のコマンドを実行します。
+```bash
+make down
+```
+
+データベースにアクセス
 
 ```bash
 make db-access
 ```
 
-**rust**
-
-rustにアクセスするには以下のコマンドを実行します。
+APIにアクセス
 
 ```bash
 make api-bash
 ```
 
-テストを実行するには以下のコマンドを実行します。
+APIのテストを実行
 
 ```bash
 make api-test
+```
+
+### 操作する
+
+ルートにアクセス
+
+```bash
+curl http://0.0.0.0:8080
+```
+
+記事を投稿する
+
+```bash
+curl http://0.0.0.0:8080/posts -X POST -H 'Content-Type: application/json' -d '{"title": "bar", "text": "bar"}'
+```
+
+記事を閲覧する
+
+```bash
+curl http://0.0.0.0:8080/posts/1
+```
+
+記事を編集する
+
+```bash
+curl http://0.0.0.0:8080/posts/1 -X PATCH -H 'Content-Type: application/json' -d '{"title": "bar", "text": "bar"}'
+```
+
+記事のリストを見る
+
+```bash
+curl http://0.0.0.0:8080/posts
+```
+
+記事を削除する
+
+```bash
+curl http://0.0.0.0:8080/posts/1 -X DELETE
 ```
